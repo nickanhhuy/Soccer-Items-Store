@@ -17,11 +17,12 @@ public class UserService{
     private PasswordEncoder passwordEncoder;
 
     // registration
-    public void registration(String userName, String password) {
+    public void registration(String userName, String password, String email) {
         System.out.println("Saving user: " + userName);
         User user = new User();
         user.setUsername(userName);
         user.setPassword(passwordEncoder.encode(password));
+        user.setEmail(email);
         User saved = userRepo.save(user);
         System.out.println("Saved user: " + saved.getUser_id());
 

@@ -1,0 +1,7 @@
+body {
+    background: #f8f9fa; /* light gray background */
+}
+.register-card {
+    width: 500px;
+    border-radius: 12px;
+}

@@ -1,10 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Soccer Items Shop</title>
+    <style>
+        .app-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app-menu {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .app-container h1 {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
+<h2>Menu</h2>
+<div class="app-header">
+    <div class="app-menu">
+        <div class="menu-links">
+            <a th:href="@{/menu}">MENU</a>
+            <a th:href="@{/history}">YOUR HISTORY ORDER</a>
+        </div>
 
+        <!-- Show LOGIN / SIGN UP if not logged in -->
+        <div th:if="${#authentication.userName == null}">
+            <a th:href="@{/register}">LOGIN / SIGN UP</a>
+        </div>
+
+        <!-- Show username + logout if logged in -->
+        <div th:if="${#authentication.userName != null}">
+            <span th:text="'Hi ' + ${#authentication.userName}"></span>
+            <form th:action="@{/logout}" method="post" style="display:inline;">
+                <button type="submit">LOGOUT</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <h1>Soccer Items Shop</h1>
+    </div>
+</div>
 </body>
 </html>

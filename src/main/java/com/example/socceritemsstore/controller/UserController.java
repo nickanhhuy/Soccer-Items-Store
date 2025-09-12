@@ -23,9 +23,10 @@ public class UserController {
     }
     @PostMapping("/register")
     public String register(@RequestParam String userName,
-                           @RequestParam String password
+                           @RequestParam String password,
+                           @RequestParam String email
                         ) {
-        userService.registration(userName, password);
+        userService.registration(userName, password, email);
         return "redirect:/login?registered";
     }
     @GetMapping("/login")
@@ -39,5 +40,12 @@ public class UserController {
     public String menu() {
         return "menu";
     }
+
+    @PostMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // clear session manually
+        return "redirect:/login?logout";
+    }
+
 
 }
