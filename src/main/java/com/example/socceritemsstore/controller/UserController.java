@@ -1,8 +1,6 @@
 package com.example.socceritemsstore.controller;
 
-import com.example.socceritemsstore.model.User;
 import com.example.socceritemsstore.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -16,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class UserController {
     @Autowired
     private UserService userService;
-
+    //Register Endpoint
     @GetMapping("/register")
     public String register() {
         return "register";
@@ -29,21 +27,15 @@ public class UserController {
         userService.registration(userName, password, email);
         return "redirect:/login?registered";
     }
+    //Login endpoint
     @GetMapping("/login")
-    public String login(Authentication auth) {
-        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-            return "redirect:/menu";
-        }
+    public String login() {
         return "login";
     }
-    @GetMapping("menu")
-    public String menu() {
-        return "menu";
-    }
-
+    //Logout: the user session will be cleared
     @PostMapping("/logout")
     public String logout(HttpSession session) {
-        session.invalidate(); // clear session manually
+        session.invalidate(); // clear the user is in the session
         return "redirect:/login?logout";
     }
 

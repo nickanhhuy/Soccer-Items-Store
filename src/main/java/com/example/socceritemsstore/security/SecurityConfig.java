@@ -2,9 +2,6 @@ package com.example.socceritemsstore.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,24 +15,24 @@ public class SecurityConfig {
 
     private UserDetailsService userDetailsService;
     @Bean
-    // encrypt the password
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
+    }// encrypt the password for high security
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(authorize -> {
-            authorize.requestMatchers("/register", "/login").permitAll() // Publicly accessible
-                    .requestMatchers("/admin").hasRole("ADMIN") // Admin-only page
-                    .requestMatchers("/order", "/receipt", "history").hasAnyRole("USER", "ADMIN") // Protected pages
+            authorize.requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                    .requestMatchers("/register", "/login").permitAll()
+                    .requestMatchers("/admin").hasRole("ADMIN") // admin page access: adding, updating or delete items
+                    .requestMatchers("/order", "/receipt", "history").hasAnyRole("USER", "ADMIN")//authorized users can access to those pages
                     .anyRequest().authenticated(); // All other requests require authentication
         }).formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/menu", true)  //if login successfully it will direct to menu page
-                .failureUrl("/login?failed")
+                .failureUrl("/login?failed")//failure cases
                 .permitAll()
         ).logout(logout -> logout
                 .logoutUrl("/logout")

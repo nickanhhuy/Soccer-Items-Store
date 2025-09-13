@@ -29,13 +29,13 @@
         </div>
 
         <!-- Show LOGIN / SIGN UP if not logged in -->
-        <div th:if="${#authentication.userName == null}">
+        <div th:if="${username == null}">
             <a th:href="@{/register}">LOGIN / SIGN UP</a>
         </div>
 
         <!-- Show username + logout if logged in -->
-        <div th:if="${#authentication.userName != null}">
-            <span th:text="'Hi ' + ${#authentication.userName}"></span>
+        <div th:if="${username != null}">
+            <span th:text="'Hi, ' + ${username}"></span>
             <form th:action="@{/logout}" method="post" style="display:inline;">
                 <button type="submit">LOGOUT</button>
             </form>
