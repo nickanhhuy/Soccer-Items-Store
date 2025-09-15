@@ -1,0 +1,197 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+/* Header */
+.header-container {
+    background-color: #0077cc;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 15px 40px;
+}
+
+.menu-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.menu-path {
+    display: flex;
+    gap: 20px;
+}
+
+.menu-path a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+}
+
+.menu-path a:hover {
+    color: #ffdd57;
+}
+
+/* Auth & Logout */
+.logout-frame {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logout-frame span {
+    font-weight: 500;
+}
+
+.logout-frame button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.logout-frame button:hover {
+    background-color: #cc0000;
+}
+
+.auth-section .btn-login {
+    color: #0077cc;
+    background-color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.auth-section .btn-login:hover {
+    background-color: #e6e6e6;
+}
+
+/* Title Section */
+.title-container {
+    background: linear-gradient(135deg, #0077cc, #00c6ff);
+    color: white;
+    text-align: center;
+    padding: 60px 20px;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.title-container h2 {
+    font-size: 2.8rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.title-container p {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+/* Content Layout */
+.content-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* responsive 4 items per row */
+    gap: 20px;
+    padding: 40px 20px;
+}
+
+/* Item Card */
+.item-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+}
+
+.item-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.label {
+    font-weight: 600;
+    margin: 6px 0;
+}
+
+.label span {
+    font-weight: 400;
+}
+
+/* Quantity Selector */
+.quantity-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.qty-btn {
+    padding: 6px 12px;
+    border: none;
+    background: #0077cc;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.qty-btn:hover {
+    background: #005fa3;
+}
+
+.qty-input {
+    width: 45px;
+    text-align: center;
+    margin: 0 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Size Dropdown */
+.size-dropdown {
+    padding: 6px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 100px;
+    text-align: center;
+}
+
+.btn-buy {
+    background-color: #0077cc;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 12px;
+    transition: background 0.2s;
+}
+
+.btn-buy:hover {
+    background-color: #005fa3;
+}
+
+

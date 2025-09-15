@@ -1,50 +1,73 @@
-<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Soccer Items Shop</title>
-    <style>
-        .app-header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .app-menu {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        .app-container h1 {
-            text-align: center;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/menu.css}">
 </head>
 <body>
-<h2>Menu</h2>
-<div class="app-header">
-    <div class="app-menu">
-        <div class="menu-links">
+<div class="header-container">
+    <div class="menu-container">
+        <div class="menu-path">
             <a th:href="@{/menu}">MENU</a>
-            <a th:href="@{/history}">YOUR HISTORY ORDER</a>
+            <a th:href="@{/history}">ORDER HISTORY</a>
+            <a th:href="@{/admin}">ADMIN</a>
         </div>
-
-        <!-- Show LOGIN / SIGN UP if not logged in -->
         <div th:if="${username == null}">
-            <a th:href="@{/register}">LOGIN / SIGN UP</a>
+            <a th:href="@{/register}">LOGIN/SIGN UP</a>
         </div>
-
-        <!-- Show username + logout if logged in -->
-        <div th:if="${username != null}">
+        <div th:if="${username != null}" class="logout-frame">
             <span th:text="'Hi, ' + ${username}"></span>
-            <form th:action="@{/logout}" method="post" style="display:inline;">
-                <button type="submit">LOGOUT</button>
+            <form th:action="@{/logout}" method="post" style="display:inline;" class="auth-section">
+                <button type="submit" class="btn-login">LOGOUT</button>
             </form>
         </div>
     </div>
+</div>
 
-    <div class="app-container">
-        <h1>Soccer Items Shop</h1>
+<div class="title-container">
+    <h2>Soccer Item Shop</h2>
+    <p>More supplies - More Fashion - More Safe</p>
+</div>
+
+<div class="content-container">
+    <!-- Loop through items dynamically -->
+    <div th:each="item : ${items}" class="item-card">
+        <h3 class="item-name" th:text="${item.name}"></h3>
+        <p class="label">Category: <span th:text="${item.category}"></span></p>
+
+        <div class="quantity-selector">
+            <button type="button" class="qty-btn" onclick="decreaseQty(this)">-</button>
+            <input type="text" value="1" class="qty-input" readonly>
+            <button type="button" class="qty-btn" onclick="increaseQty(this)">+</button>
+        </div>
+
+        <p class="label">Price: <span th:text="'$' + ${item.price}"></span></p>
+
+        <label class="label">Size:</label>
+        <select class="size-dropdown">
+            <option th:each="s : ${item.sizes}" th:text="${s}"></option>
+        </select>
+
+        <p class="label">Gender: <span th:text="${item.gender}"></span></p>
+
+        <form th:action="@{/order}" method="get">
+            <button type="submit" class="btn-buy">Buy Now</button>
+        </form>
     </div>
 </div>
+
+<script>
+    function decreaseQty(btn) {
+        let input = btn.parentNode.querySelector(".qty-input");
+        if (parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    }
+
+    function increaseQty(btn) {
+        let input = btn.parentNode.querySelector(".qty-input");
+        input.value = parseInt(input.value) + 1;
+    }
+</script>
 </body>
 </html>
+
