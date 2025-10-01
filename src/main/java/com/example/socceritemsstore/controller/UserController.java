@@ -38,6 +38,4 @@ public class UserController {
         session.invalidate(); // clear the user is in the session
         return "redirect:/login?logout";
     }
-
-
 }
