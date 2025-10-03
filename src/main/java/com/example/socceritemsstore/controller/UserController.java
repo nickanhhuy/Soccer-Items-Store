@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.IOException;
+
 @Controller
 public class UserController {
     @Autowired
@@ -23,7 +25,7 @@ public class UserController {
     public String register(@RequestParam String userName,
                            @RequestParam String password,
                            @RequestParam String email
-                        ) {
+                        ) throws IOException {
         userService.registration(userName, password, email);
         return "redirect:/login?registered";
     }

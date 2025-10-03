@@ -29,30 +29,31 @@
 </div>
 
 <div class="content-container">
-    <!-- Loop through items dynamically -->
+
     <div th:each="item : ${items}" class="item-card">
-        <h3 class="item-name" th:text="${item.name}"></h3>
-        <p class="label">Category: <span th:text="${item.category}"></span></p>
+        <form th:action="@{/order}" method="post">
+            <h3 class="item-name" th:text="${item.name}"></h3>
+            <p class="label">Category: <span th:text="${item.category}"></span></p>
 
-        <div class="quantity-selector">
-            <button type="button" class="qty-btn" onclick="decreaseQty(this)">-</button>
-            <input type="text" value="1" class="qty-input" readonly>
-            <button type="button" class="qty-btn" onclick="increaseQty(this)">+</button>
-        </div>
+            <div class="quantity-selector">
+                <button type="button" class="qty-btn" onclick="decreaseQty(this)">-</button>
+                <input type="text" value="1" class="qty-input" readonly>
+                <button type="button" class="qty-btn" onclick="increaseQty(this)">+</button>
+            </div>
 
-        <p class="label">Price: <span th:text="'$' + ${item.price}"></span></p>
+            <p class="label">Price: <span th:text="'$' + ${item.price}"></span></p>
 
-        <label class="label">Size:</label>
-        <select class="size-dropdown">
-            <option th:each="s : ${item.sizes}" th:text="${s}"></option>
-        </select>
+            <label class="label">Size:</label>
+            <select class="size-dropdown">
+                <option th:each="s : ${item.sizes}" th:text="${s}"></option>
+            </select>
 
-        <p class="label">Gender: <span th:text="${item.gender}"></span></p>
-
-        <form th:action="@{/order}" method="get">
+            <p class="label">Gender: <span th:text="${item.gender}"></span></p>
+<!--            <img th:src="${item.imageUrl}" alt="Item Image" class="item-image"/>-->
             <button type="submit" class="btn-buy">Buy Now</button>
         </form>
     </div>
+
 </div>
 
 <script>

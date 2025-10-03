@@ -27,8 +27,10 @@ public class Item {
     public Integer quantity;
     public Double price;
     public String gender;
-
+    public String imageURL;
     @ElementCollection
     private List<String> sizes;
+
+
 
 }
