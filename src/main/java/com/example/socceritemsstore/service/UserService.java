@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.S3Client;
 
 import java.io.IOException;
 
@@ -23,6 +24,8 @@ public class UserService{
     private S3Service s3Service;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private S3Client s3Client;
 
     // registration
     public void registration(String userName, String password, String email) throws IOException {
@@ -35,7 +38,8 @@ public class UserService{
 
         String userJson = objectMapper.writeValueAsString(savedUser);
 
-        String fileName = "users/user_" + savedUser.getUser_id() + ".json";
-        s3Service.uploadStringAsFile(userJson, fileName);
+        String fileName = "users/" + savedUser.getUser_id() + ".json";
+        s3Service.uploadStringAsFile(fileName, userJson);
+
     }
 }
