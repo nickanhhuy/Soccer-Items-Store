@@ -7,7 +7,7 @@ body {
 
 /* Header */
 .header-container {
-    background-color: #0077cc;
+    background-color: #466588;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     padding: 15px 40px;
 }
@@ -75,15 +75,16 @@ body {
     background-color: #e6e6e6;
 }
 
-/* Title Section */
 .title-container {
-    background: linear-gradient(135deg, #0077cc, #00c6ff);
+    background-image: url("https://soccer-items-images.s3.us-east-1.amazonaws.com/static_images/nikebg.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     color: white;
     text-align: center;
-    padding: 60px 20px;
-    border-bottom-left-radius: 30px;
-    border-bottom-right-radius: 30px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    padding: 100px 20px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+    overflow: hidden;
 }
 
 .title-container h2 {
@@ -97,8 +98,11 @@ body {
     font-weight: 500;
 }
 
-/* Content Layout */
 .content-container {
+    background-image: url("https://soccer-items-images.s3.us-east-1.amazonaws.com/static_images/soccerbg.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
@@ -106,20 +110,16 @@ body {
     padding: 20px;
 }
 
-/* Item Card */
 .item-card {
-    background-image: url("https://soccer-items-images.s3.us-east-1.amazonaws.com/bgsoccerstore.jpg");
+    background: #c3af92;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     padding: 20px;
     text-align: center;
-
-    display: flex;             /* make flex for column layout */
-    flex-direction: column;    /* stack content vertically */
-    align-items: center;       /* center content horizontally */
-
-    width: 250px;              /* fixed width to make row layout work */
-
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 250px;
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -133,6 +133,13 @@ body {
     font-weight: 600;
     margin-bottom: 10px;
 }
+.item-image {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+}
 
 .label {
     font-weight: 600;
@@ -143,8 +150,6 @@ body {
     font-weight: 400;
 }
 
-
-/* Quantity Selector */
 .quantity-selector {
     display: flex;
     justify-content: center;
@@ -176,7 +181,6 @@ body {
     border-radius: 4px;
 }
 
-/* Size Dropdown */
 .size-dropdown {
     padding: 6px;
     margin: 8px 0;

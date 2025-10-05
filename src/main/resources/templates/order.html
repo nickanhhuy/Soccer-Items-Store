@@ -2,9 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Order Cart</title>
 </head>
 <body>
+<div class="order-container">
+    <h2>My Orders</h2>
 
+    <table>
+        <thead>
+        <tr>
+            <th>Item Name</th>
+            <th>Quantity</th>
+            <th>Price (each)</th>
+            <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${items}">
+            <td th:text="${item.getName()}"></td>
+            <td th:text="${item.getCategory()}"></td>
+            <td th:text="${item.getQuantity()}"></td>
+            <td th:text="${item.getPrice()}"></td>
+            <td th:text="${item.getGender()}"></td>
+            <td th:text="${item.getSizes()}"></td>
+            <td th:text="${item.getQuantity() * item.getPrice}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="btn-container">
+        <a th:href="@{/home}" class="btn">Continue Shopping</a>
+    </div>
+</div>
 </body>
 </html>

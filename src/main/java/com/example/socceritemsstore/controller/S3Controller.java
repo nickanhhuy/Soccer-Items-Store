@@ -1,6 +1,6 @@
 package com.example.socceritemsstore.controller;
 
-//import com.example.socceritemsstore.service.S3Service;
+import com.example.socceritemsstore.service.S3Service;
 import com.example.socceritemsstore.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
+@RequestMapping
+@CrossOrigin(origins = "*")
 public class S3Controller {
     @Autowired
     private S3Service s3Service;
@@ -38,4 +40,5 @@ public class S3Controller {
             return ResponseEntity.status(404).body(null);
         }
     }
+
 }

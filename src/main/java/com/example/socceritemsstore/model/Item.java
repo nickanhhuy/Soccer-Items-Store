@@ -3,12 +3,10 @@ package com.example.socceritemsstore.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-
-
-import javax.annotation.processing.Generated;
 import java.util.List;
 
 @Entity
+@Table(name = "item")
 public class Item {
 
     @Id
@@ -22,19 +20,20 @@ public class Item {
     public Integer quantity;
     public Double price;
     public String gender;
-    public String imageURL;
+    public String image;
     @ElementCollection
     private List<String> sizes;
+
     public Item() {}
 
     // Constructor with fields
-    public Item(String name, String category, Integer quantity, Double price, String gender, String imageURL, List<String> sizes) {
+    public Item(String name, String category, Integer quantity, Double price, String gender, String image, List<String> sizes) {
         this.name = name;
         this.category = category;
         this.quantity = quantity;
         this.price = price;
         this.gender = gender;
-        this.imageURL = imageURL;
+        this.image= image;
         this.sizes = sizes;
     }
 
@@ -78,12 +77,12 @@ public class Item {
         this.price = price;
     }
 
-    public String getImageURL() {
-        return imageURL;
+    public String getImage() {
+        return image;
     }
 
     public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
+        this.image = imageURL;
     }
 
     public String getGender() {

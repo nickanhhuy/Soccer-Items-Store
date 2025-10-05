@@ -10,23 +10,29 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 @Service
 public class S3Service {
+
     @Autowired
     private S3Client s3Client;
 
     @Value("${aws.bucket.name}")
     private String bucketName;
 
+
     public void uploadStringAsFile(String key, String jsonContent) throws IOException {
         s3Client.putObject(
                 PutObjectRequest.builder()
                         .bucket(bucketName)
                         .key(key)
+                        .contentType("application/json")
                         .build(),
                 RequestBody.fromString(jsonContent, StandardCharsets.UTF_8)
         );

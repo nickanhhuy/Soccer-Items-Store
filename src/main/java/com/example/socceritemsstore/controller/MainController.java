@@ -3,6 +3,7 @@ package com.example.socceritemsstore.controller;
 //import com.example.socceritemsstore.service.OrderService;
 import com.example.socceritemsstore.model.Item;
 import com.example.socceritemsstore.service.ItemService;
+//import com.example.socceritemsstore.service.S3Service;
 import com.example.socceritemsstore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -12,11 +13,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class MainController {
     @Autowired
     private ItemService itemService;
+
     // Menu page
     @GetMapping("/menu")
     public String menu(Model model, Authentication authentication) {
@@ -28,12 +31,36 @@ public class MainController {
         model.addAttribute("items", itemService.getAllItems());
         return "menu";
     }
+
+    @PostMapping("/order")
+    public String processOrder(@RequestParam("itemId") Long itemId,
+                               @RequestParam("quantity") Integer quantity,
+                               @RequestParam("size") String size,
+                               Model model) {
+
+        Item item = itemService.getItem(itemId);
+        if (item == null) {
+            model.addAttribute("error", "Item not found!");
+            return "error";
+        }
+
+        double total = item.getPrice() * quantity;
+
+        model.addAttribute("item", item);
+        model.addAttribute("quantity", quantity);
+        model.addAttribute("size", size);
+        model.addAttribute("totalAmount", total);
+
+        return "order";
+    }
+
+
     //For admin only
     @GetMapping("/admin")
     public String addItem(Model model) {
         model.addAttribute("items", itemService.getAllItems());
         model.addAttribute("item", new Item());
-        return "admin";
+        return "order";
     }
     // Admin: Save item
     @PostMapping("/admin/saveItem")

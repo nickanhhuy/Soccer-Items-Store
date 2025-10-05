@@ -23,7 +23,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(authorize -> {
-            authorize.requestMatchers("/css/**", "/js/**", "/image/**").permitAll()
+            authorize.requestMatchers("/css/**", "/js/**", "/static/image/**").permitAll()
                     .requestMatchers("/register", "/login").permitAll()
                     .requestMatchers("/admin").hasRole("ADMIN") // admin page access: adding, updating or delete items
                     .requestMatchers("/order", "/receipt", "history").hasAnyRole("USER", "ADMIN")//authorized users can access to those pages

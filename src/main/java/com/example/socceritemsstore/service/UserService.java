@@ -35,11 +35,11 @@ public class UserService{
         user.setEmail(email);
         user.setRole("USER");
         User savedUser = userRepo.save(user);
-
         String userJson = objectMapper.writeValueAsString(savedUser);
 
         String fileName = "users/" + savedUser.getUser_id() + ".json";
         s3Service.uploadStringAsFile(fileName, userJson);
+
 
     }
 }

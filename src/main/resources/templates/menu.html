@@ -29,7 +29,6 @@
 </div>
 
 <div class="content-container">
-
     <div th:each="item : ${items}" class="item-card">
         <form th:action="@{/order}" method="post">
             <h3 class="item-name" th:text="${item.name}"></h3>
@@ -49,7 +48,7 @@
             </select>
 
             <p class="label">Gender: <span th:text="${item.gender}"></span></p>
-<!--            <img th:src="${item.imageUrl}" alt="Item Image" class="item-image"/>-->
+            <img th:src="@{'/image/' + ${item.image}}" alt="Item Image" class="item-image"/>
             <button type="submit" class="btn-buy">Buy Now</button>
         </form>
     </div>
