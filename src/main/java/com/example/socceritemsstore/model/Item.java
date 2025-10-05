@@ -27,13 +27,12 @@ public class Item {
     public Item() {}
 
     // Constructor with fields
-    public Item(String name, String category, Integer quantity, Double price, String gender, String image, List<String> sizes) {
+    public Item(String name, String category, Integer quantity, Double price, String gender, List<String> sizes) {
         this.name = name;
         this.category = category;
         this.quantity = quantity;
         this.price = price;
         this.gender = gender;
-        this.image= image;
         this.sizes = sizes;
     }
 
@@ -81,8 +80,8 @@ public class Item {
         return image;
     }
 
-    public void setImageURL(String imageURL) {
-        this.image = imageURL;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getGender() {

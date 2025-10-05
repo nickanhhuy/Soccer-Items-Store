@@ -31,26 +31,31 @@
 <div class="content-container">
     <div th:each="item : ${items}" class="item-card">
         <form th:action="@{/order}" method="post">
+            <input type="hidden" name="name" th:value="${item.name}">
+            <input type="hidden" name="category" th:value="${item.category}">
+            <input type="hidden" name="price" th:value="${item.price}">
+            <input type="hidden" name="gender" th:value="${item.gender}">
+            <input type="hidden" name="image" th:value="${item.image}">
+
             <h3 class="item-name" th:text="${item.name}"></h3>
             <p class="label">Category: <span th:text="${item.category}"></span></p>
-
             <div class="quantity-selector">
                 <button type="button" class="qty-btn" onclick="decreaseQty(this)">-</button>
-                <input type="text" value="1" class="qty-input" readonly>
+                <input type="text" name="quantity" value="1" class="qty-input" readonly>
                 <button type="button" class="qty-btn" onclick="increaseQty(this)">+</button>
             </div>
 
             <p class="label">Price: <span th:text="'$' + ${item.price}"></span></p>
-
             <label class="label">Size:</label>
-            <select class="size-dropdown">
-                <option th:each="s : ${item.sizes}" th:text="${s}"></option>
+            <select name="size" class="size-dropdown">
+                <option th:each="s : ${item.sizes}" th:value="${s}" th:text="${s}"></option>
             </select>
 
             <p class="label">Gender: <span th:text="${item.gender}"></span></p>
             <img th:src="@{'/image/' + ${item.image}}" alt="Item Image" class="item-image"/>
             <button type="submit" class="btn-buy">Buy Now</button>
         </form>
+
     </div>
 
 </div>

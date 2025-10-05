@@ -20,12 +20,12 @@ public class UserService{
     private UserRepo userRepo;
     @Autowired
     private PasswordEncoder passwordEncoder;
-    @Autowired
-    private S3Service s3Service;
+//    @Autowired
+//    private S3Service s3Service;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    @Autowired
-    private S3Client s3Client;
+//    @Autowired
+//    private S3Client s3Client;
 
     // registration
     public void registration(String userName, String password, String email) throws IOException {
@@ -34,11 +34,11 @@ public class UserService{
         user.setPassword(passwordEncoder.encode(password));
         user.setEmail(email);
         user.setRole("USER");
-        User savedUser = userRepo.save(user);
-        String userJson = objectMapper.writeValueAsString(savedUser);
+        userRepo.save(user);
+//        String userJson = objectMapper.writeValueAsString(savedUser);
 
-        String fileName = "users/" + savedUser.getUser_id() + ".json";
-        s3Service.uploadStringAsFile(fileName, userJson);
+//        String fileName = "users/" + savedUser.getUser_id() + ".json";
+//        s3Service.uploadStringAsFile(fileName, userJson);
 
 
     }
