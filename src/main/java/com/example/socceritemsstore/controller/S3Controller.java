@@ -28,15 +28,15 @@ public class S3Controller {
             return ResponseEntity.status(500).body("Failed to upload: " + e.getMessage());
         }
     }
-//    @GetMapping("/download/{key}")
-//    public ResponseEntity<byte[]> downloadFile(@PathVariable String key) {
-//        try {
-//            byte[] data = s3Service.downloadFile(key);
-//            return ResponseEntity.ok()
-//                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + key)
-//                    .body(data);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(404).body(null);
-//        }
-//    }
+    @GetMapping("/download/{key}")
+    public ResponseEntity<byte[]> downloadFile(@PathVariable String key) {
+        try {
+            byte[] data = s3Service.downloadFile(key);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + key)
+                    .body(data);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
+    }
 }
