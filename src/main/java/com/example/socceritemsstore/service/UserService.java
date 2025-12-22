@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.S3Client;
+import java.time.Duration;
 
 import java.io.IOException;
 
@@ -20,12 +21,12 @@ public class UserService{
     private UserRepo userRepo;
     @Autowired
     private PasswordEncoder passwordEncoder;
-//    @Autowired
-//    private S3Service s3Service;
+    @Autowired
+    private S3Service s3Service;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-//    @Autowired
-//    private S3Client s3Client;
+    @Autowired
+    private S3Client s3Client;
 
     // registration
     public void registration(String userName, String password, String email) throws IOException {
@@ -33,13 +34,18 @@ public class UserService{
         user.setUserName(userName);
         user.setPassword(passwordEncoder.encode(password));
         user.setEmail(email);
-        user.setRole("USER");
-        userRepo.save(user);
-//        String userJson = objectMapper.writeValueAsString(savedUser);
+        
+        // Assign ADMIN role to huynguyen, USER role to others
+        if ("huynguyen".equalsIgnoreCase(userName)) {
+            user.setRole("ADMIN");
+        } else {
+            user.setRole("USER");
+        }
+        
+        User savedUser = userRepo.save(user);
+        String userJson = objectMapper.writeValueAsString(savedUser);
 
-//        String fileName = "users/" + savedUser.getUser_id() + ".json";
-//        s3Service.uploadStringAsFile(fileName, userJson);
-
-
+        String fileName = "users/" + savedUser.getUser_id() + ".json";
+        s3Service.uploadStringAsFile(fileName, userJson);
     }
 }

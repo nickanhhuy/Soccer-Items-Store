@@ -1,11 +1,260 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Check out</title>
+    <title>Order Successful - HuSoccer</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/menu.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body style="background-color: #466588; color: sandybrown; text-align: center; align-items: center; justify-content: center;">
-  <h1 style="font-size: 50px">Check out successfully!!!</h1>
-  <p style="font-size: 30px"> The application is in developing so it does not have payment options yet. Sorry about that</p>
+<body>
+<!-- Top Bar -->
+<div class="top-bar">
+    <div class="container">
+        <div class="top-bar-content">
+            <span>Free shipping on orders over $99</span>
+            <div class="top-bar-right">
+                <span>1-800-SOCCER</span>
+                <span>info@husoccer.com</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Header -->
+<header class="main-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="site-name">
+                <h1>HuSoccer</h1>
+            </div>
+            
+            <nav class="main-nav">
+                <a th:href="@{/menu}" class="nav-link">
+                    Shop
+                </a>
+                <a th:href="@{/history}" class="nav-link">
+                    History
+                </a>
+                <a th:href="@{/admin}" class="nav-link">
+                    Admin
+                </a>
+            </nav>
+            
+            <div class="header-actions">
+                <div th:if="${username == null}" class="auth-buttons">
+                    <a th:href="@{/register}" class="btn btn-outline">
+                        Login / Sign Up
+                    </a>
+                </div>
+                <div th:if="${username != null}" class="user-menu">
+                    <span class="welcome-text">
+                        Hi, <span th:text="${username}"></span>
+                    </span>
+                    <form th:action="@{/logout}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-primary">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Checkout Success Section -->
+<section class="checkout-section">
+    <div class="container">
+        <div class="success-container">
+            <div class="success-icon">
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                    <circle cx="40" cy="40" r="40" fill="#4ade80"/>
+                    <path d="M25 40L35 50L55 30" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            
+            <h1>Order Successful!</h1>
+            <p class="success-message">Thank you for your order. Your order has been placed successfully.</p>
+            
+            <div class="order-details">
+                <h3>Order Details</h3>
+                
+                <div class="detail-row">
+                    <span class="label">Customer Name:</span>
+                    <span class="value" th:text="${fullName}"></span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="label">Shipping Address:</span>
+                    <span class="value">
+                        <span th:text="${address}"></span>, 
+                        <span th:text="${city}"></span>, 
+                        <span th:text="${state}"></span> 
+                        <span th:text="${zipCode}"></span>
+                    </span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="label">Phone Number:</span>
+                    <span class="value" th:text="${phone}"></span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="label">Payment Method:</span>
+                    <span class="value" th:text="${paymentMethod}"></span>
+                </div>
+                
+                <div class="detail-row total">
+                    <span class="label">Total Amount:</span>
+                    <span class="value">$<span th:text="${#numbers.formatDecimal(total, 1, 2)}"></span></span>
+                </div>
+            </div>
+            
+            <div class="success-actions">
+                <a th:href="@{/menu}" class="btn btn-primary">Continue Shopping</a>
+                <a th:href="@{/history}" class="btn btn-outline">View Order History</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="main-footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>HuSoccer</h4>
+                <p>Your destination for soccer equipment and gear.</p>
+            </div>
+            <div class="footer-section">
+                <h5>Contact Info</h5>
+                <p>1-800-SOCCER</p>
+                <p>info@husoccer.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 HuSoccer. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<style>
+.checkout-section {
+    padding: 80px 0;
+    background-color: #f9fafb;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+}
+
+.success-container {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 60px 40px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.success-icon {
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.success-container h1 {
+    font-size: 36px;
+    color: #1a1a1a;
+    margin-bottom: 15px;
+}
+
+.success-message {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 40px;
+}
+
+.order-details {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.order-details h3 {
+    font-size: 22px;
+    margin-bottom: 25px;
+    color: #1a1a1a;
+    text-align: center;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-row.total {
+    margin-top: 15px;
+    padding-top: 20px;
+    border-top: 2px solid #e5e5e5;
+    border-bottom: none;
+}
+
+.detail-row .label {
+    font-weight: 600;
+    color: #666;
+}
+
+.detail-row .value {
+    font-weight: 600;
+    color: #1a1a1a;
+    text-align: right;
+}
+
+.detail-row.total .value {
+    font-size: 24px;
+    color: #4ade80;
+}
+
+.success-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .success-container {
+        padding: 40px 20px;
+    }
+    
+    .success-container h1 {
+        font-size: 28px;
+    }
+    
+    .success-actions {
+        flex-direction: column;
+    }
+    
+    .success-actions .btn {
+        width: 100%;
+    }
+    
+    .detail-row {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .detail-row .value {
+        text-align: left;
+    }
+}
+</style>
 </body>
 </html>

@@ -1,10 +1,359 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Order History - HuSoccer</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/menu.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+<!-- Top Bar -->
+<div class="top-bar">
+    <div class="container">
+        <div class="top-bar-content">
+            <span>Free shipping on orders over $99</span>
+            <div class="top-bar-right">
+                <span>1-800-SOCCER</span>
+                <span>info@husoccer.com</span>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- Main Header -->
+<header class="main-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="site-name">
+                <h1>HuSoccer</h1>
+            </div>
+            
+            <nav class="main-nav">
+                <a th:href="@{/menu}" class="nav-link">
+                    Shop
+                </a>
+                <a th:href="@{/history}" class="nav-link active">
+                    Orders
+                </a>
+                <a th:href="@{/admin}" class="nav-link">
+                    Admin
+                </a>
+            </nav>
+            
+            <div class="header-actions">
+                <div th:if="${username == null}" class="auth-buttons">
+                    <a th:href="@{/register}" class="btn btn-outline">
+                        Login / Sign Up
+                    </a>
+                </div>
+                <div th:if="${username != null}" class="user-menu">
+                    <span class="welcome-text">
+                        Hi, <span th:text="${username}"></span>
+                    </span>
+                    <form th:action="@{/logout}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-primary">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Order History Section -->
+<section class="history-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Your Order History</h2>
+            <p>View all your orders</p>
+        </div>
+        
+        <div class="history-content">
+            <!-- Show message if no database orders exist -->
+            <div th:if="${dbOrders == null || #lists.isEmpty(dbOrders)}" class="empty-history">
+                <h3>No orders yet</h3>
+                <p>You haven't placed any orders yet.</p>
+                <a th:href="@{/menu}" class="btn btn-primary">Start Shopping</a>
+            </div>
+            
+            <!-- Show database orders if they exist -->
+            <div th:if="${dbOrders != null && !#lists.isEmpty(dbOrders)}" class="orders-container">
+                <div th:each="dbOrder : ${dbOrders}" class="order-card">
+                    <div class="order-header">
+                        <h3>Order #<span th:text="${dbOrder.id}"></span></h3>
+                        <div class="order-info">
+                            <span>Date: <span th:text="${dbOrder.orderDate}"></span></span>
+                            <span class="order-total">Total: $<span th:text="${#numbers.formatDecimal(dbOrder.totalAmount, 1, 2)}"></span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="order-details">
+                        <div class="shipping-info">
+                            <h4>Shipping Information</h4>
+                            <p><span th:text="${dbOrder.fullName}"></span></p>
+                            <p><span th:text="${dbOrder.address}"></span></p>
+                            <p><span th:text="${dbOrder.city}"></span>, <span th:text="${dbOrder.state}"></span> <span th:text="${dbOrder.zipCode}"></span></p>
+                            <p>Phone: <span th:text="${dbOrder.phone}"></span></p>
+                            <p>Payment: <span th:text="${dbOrder.paymentMethod}"></span></p>
+                        </div>
+                        
+                        <div class="order-items" th:if="${dbOrder.orderItems != null && !#lists.isEmpty(dbOrder.orderItems)}">
+                            <h4>Items Ordered</h4>
+                            <div class="items-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Category</th>
+                                            <th>Size</th>
+                                            <th>Quantity</th>
+                                            <th>Price</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="item : ${dbOrder.orderItems}">
+                                            <td>
+                                                <div class="product-info">
+                                                    <img th:src="@{'/image/' + ${item.image}}" alt="Product" class="order-image">
+                                                    <span th:text="${item.productName}"></span>
+                                                </div>
+                                            </td>
+                                            <td th:text="${item.category}"></td>
+                                            <td th:text="${item.size}"></td>
+                                            <td th:text="${item.quantity}"></td>
+                                            <td>$<span th:text="${#numbers.formatDecimal(item.price, 1, 2)}"></span></td>
+                                            <td class="total-price">$<span th:text="${#numbers.formatDecimal(item.price * item.quantity, 1, 2)}"></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="history-actions">
+                    <a th:href="@{/menu}" class="btn btn-outline">Continue Shopping</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="main-footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>HuSoccer</h4>
+                <p>Your destination for soccer equipment and gear.</p>
+            </div>
+            <div class="footer-section">
+                <h5>Quick Links</h5>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Shipping Info</a></li>
+                    <li><a href="#">Returns</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h5>Contact Info</h5>
+                <p>1-800-SOCCER</p>
+                <p>info@husoccer.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 HuSoccer. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<style>
+.history-section {
+    padding: 80px 0;
+    background-color: #f9fafb;
+    min-height: 60vh;
+}
+
+.history-content {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.empty-history {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-history h3 {
+    font-size: 28px;
+    margin-bottom: 15px;
+    color: #1a1a1a;
+}
+
+.empty-history p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.order-card {
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.order-header {
+    background: #f9fafb;
+    padding: 20px;
+    border-bottom: 1px solid #e5e5e5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.order-header h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #1a1a1a;
+}
+
+.order-info {
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+    color: #666;
+}
+
+.order-total {
+    font-weight: 600;
+    color: #4ade80;
+}
+
+.order-details {
+    padding: 20px;
+}
+
+.shipping-info {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
+.shipping-info h4 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    color: #1a1a1a;
+}
+
+.shipping-info p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.order-items h4 {
+    margin: 0 0 20px 0;
+    font-size: 16px;
+    color: #1a1a1a;
+}
+
+.items-table {
+    overflow-x: auto;
+}
+
+.items-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.items-table th {
+    background: #f9fafb;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #1a1a1a;
+    border-bottom: 2px solid #e5e5e5;
+    font-size: 14px;
+}
+
+.items-table td {
+    padding: 15px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+}
+
+.product-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.order-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.total-price {
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.history-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: flex-end;
+    margin-top: 30px;
+}
+
+@media (max-width: 768px) {
+    .history-content {
+        padding: 20px;
+    }
+    
+    .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .order-info {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .order-details {
+        padding: 15px;
+    }
+    
+    .shipping-info {
+        padding: 15px;
+    }
+    
+    .items-table {
+        font-size: 12px;
+    }
+    
+    .order-image {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .history-actions {
+        flex-direction: column;
+    }
+    
+    .history-actions .btn {
+        width: 100%;
+    }
+}
+</style>
 </body>
 </html>

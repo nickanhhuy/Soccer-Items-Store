@@ -1,7 +1,237 @@
-body {
-    background: #f8f9fa; /* light gray background */
+/* Reset & Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
-.register-card {
-    width: 500px;
-    border-radius: 12px;
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: #f9fafb;
+    color: #1a1a1a;
+    line-height: 1.6;
+}
+
+/* Register Page Layout */
+.register-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 20px;
+}
+
+.register-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    background-image: url('https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1600');
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: overlay;
+    z-index: -2;
+}
+
+.bg-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 100%);
+    z-index: -1;
+}
+
+/* Register Container */
+.register-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 40px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Register Header */
+.register-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.logo i {
+    font-size: 32px;
+    color: #4ade80;
+}
+
+.logo h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.register-header h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+
+.register-header p {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Form Styles */
+.register-form {
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group label i {
+    color: #4ade80;
+    font-size: 16px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e5e5e5;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    background-color: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #4ade80;
+    box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+}
+
+.form-group input::placeholder {
+    color: #a3a3a3;
+    font-weight: 400;
+}
+
+/* Buttons */
+.btn {
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-decoration: none;
+    width: 100%;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(74, 222, 128, 0.3);
+}
+
+.btn-outline {
+    background: transparent;
+    color: #1a1a1a;
+    border: 2px solid #e5e5e5;
+}
+
+.btn-outline:hover {
+    border-color: #4ade80;
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.05);
+}
+
+/* Register Footer */
+.register-footer {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #e5e5e5;
+}
+
+.register-footer p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .register-container {
+        padding: 30px 20px;
+        margin: 10px;
+    }
+    
+    .logo h1 {
+        font-size: 24px;
+    }
+    
+    .register-header h2 {
+        font-size: 20px;
+    }
+}
+
+/* Loading Animation */
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.btn:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Focus States for Accessibility */
+.btn:focus,
+input:focus {
+    outline: 2px solid #4ade80;
+    outline-offset: 2px;
+}
+
+/* Smooth Transitions */
+* {
+    transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
 }

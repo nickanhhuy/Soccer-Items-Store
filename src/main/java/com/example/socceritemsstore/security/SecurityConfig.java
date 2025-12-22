@@ -26,7 +26,7 @@ public class SecurityConfig {
             authorize.requestMatchers("/css/**", "/js/**", "/static/image/**").permitAll()
                     .requestMatchers("/register", "/login").permitAll()
                     .requestMatchers("/admin").hasRole("ADMIN") // admin page access: adding, updating or delete items
-                    .requestMatchers("/order", "/receipt", "history", "checkout").hasAnyRole("USER", "ADMIN")//authorized users can access to those pages
+                    .requestMatchers("/order", "/receipt", "/history", "/checkout").hasAnyRole("USER", "ADMIN")//authorized users can access to those pages
                     .anyRequest().authenticated(); // All other requests require authentication
         }).formLogin(form -> form
                 .loginPage("/login")

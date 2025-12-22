@@ -1,66 +1,290 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Soccer Items Shop</title>
+    <title>HuSoccer - Soccer Equipment</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/menu.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="header-container">
-    <div class="menu-container">
-        <div class="menu-path">
-            <a th:href="@{/menu}">MENU</a>
-            <a th:href="@{/history}">ORDER HISTORY</a>
-            <a th:href="@{/admin}">ADMIN</a>
-        </div>
-        <div th:if="${username == null}">
-            <a th:href="@{/register}">LOGIN/SIGN UP</a>
-        </div>
-        <div th:if="${username != null}" class="logout-frame">
-            <span th:text="'Hi, ' + ${username}"></span>
-            <form th:action="@{/logout}" method="post" style="display:inline;" class="auth-section">
-                <button type="submit" class="btn-login">LOGOUT</button>
-            </form>
-        </div>
-    </div>
-</div>
 
-<div class="title-container">
-    <h2>Soccer Item Shop</h2>
-    <p>More supplies - More Fashion - More Safe</p>
-</div>
-
-<div class="content-container">
-    <div th:each="item : ${items}" class="item-card">
-        <form th:action="@{/order}" method="post">
-            <input type="hidden" name="name" th:value="${item.name}">
-            <input type="hidden" name="category" th:value="${item.category}">
-            <input type="hidden" name="price" th:value="${item.price}">
-            <input type="hidden" name="gender" th:value="${item.gender}">
-            <input type="hidden" name="image" th:value="${item.image}">
-
-            <h3 class="item-name" th:text="${item.name}"></h3>
-            <p class="label">Category: <span th:text="${item.category}"></span></p>
-            <div class="quantity-selector">
-                <button type="button" class="qty-btn" onclick="decreaseQty(this)">-</button>
-                <input type="text" name="quantity" value="1" class="qty-input" readonly>
-                <button type="button" class="qty-btn" onclick="increaseQty(this)">+</button>
+<!-- Main Header -->
+<header class="main-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="site-name">
+                <h1>HuSoccer</h1>
             </div>
-
-            <p class="label">Price: <span th:text="'$' + ${item.price}"></span></p>
-            <label class="label">Size:</label>
-            <select name="size" class="size-dropdown">
-                <option th:each="s : ${item.sizes}" th:value="${s}" th:text="${s}"></option>
-            </select>
-
-            <p class="label">Gender: <span th:text="${item.gender}"></span></p>
-            <img th:src="@{'/image/' + ${item.image}}" alt="Item Image" class="item-image"/>
-            <button type="submit" class="btn-buy">Buy Now</button>
-        </form>
-
+            
+            <nav class="main-nav">
+                <a th:href="@{/menu}" class="nav-link active">Shop</a>
+                <a th:href="@{/history}" class="nav-link">History</a>
+                <a th:href="@{/admin}" class="nav-link">Admin</a>
+            </nav>
+            
+            <div class="header-actions">
+                <div th:if="${username == null}" class="auth-buttons">
+                    <a th:href="@{/register}" class="btn btn-outline">Login / Sign Up</a>
+                </div>
+                <div th:if="${username != null}" class="user-menu">
+                    <span class="welcome-text">Hi, <span th:text="${username}"></span></span>
+                    <form th:action="@{/logout}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-primary">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
+</header>
 
-</div>
+<!-- Hero Slideshow Section -->
+<section class="hero-slideshow">
+    <div class="slideshow-container">
+        <div class="slide active">
+            <img src="/image/slideshow/messiWC.jpg" alt="Messi World Cup">
+            <div class="slide-content">
+                <h1>World Cup Gear</h1>
+                <p>Get the same gear used in the World Cup</p>
+                <a href="#products" class="btn btn-primary">Shop Now</a>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="/image/slideshow/nikeboosts.jpg" alt="Nike Boots">
+            <div class="slide-content">
+                <h1>Nike Football Boots</h1>
+                <p>Latest Nike football boots and technology</p>
+                <a href="#products" class="btn btn-primary">Explore Nike</a>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="/image/slideshow/adidas.jpg" alt="Adidas Collection">
+            <div class="slide-content">
+                <h1>Adidas Soccer Gear</h1>
+                <p>Shop Adidas football boots and equipment</p>
+                <a href="#products" class="btn btn-primary">Shop Adidas</a>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="/image/slideshow/hazard.jpg" alt="Professional Gear">
+            <div class="slide-content">
+                <h1>Professional Equipment</h1>
+                <p>Train and play like the pros with our professional selection</p>
+                <a href="#products" class="btn btn-primary">Go Pro</a>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="/image/slideshow/neymarpuma.jpg" alt="Puma Collection">
+            <div class="slide-content">
+                <h1>Puma Football Boots</h1>
+                <p>Check out Puma football technology</p>
+                <a href="#products" class="btn btn-primary">Shop Puma</a>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="/image/slideshow/nike2.jpg" alt="Nike Innovation">
+            <div class="slide-content">
+                <h1>High Performance Gear</h1>
+                <p>Push your limits with quality soccer equipment</p>
+                <a href="#products" class="btn btn-primary">Level Up</a>
+            </div>
+        </div>
+        
+        <button class="slide-nav prev" onclick="changeSlide(-1)">‹</button>
+        <button class="slide-nav next" onclick="changeSlide(1)">›</button>
+        
+        <div class="slide-indicators"></div>
+            <span class="indicator active" onclick="currentSlide(1)"></span>
+            <span class="indicator" onclick="currentSlide(2)"></span>
+            <span class="indicator" onclick="currentSlide(3)"></span>
+            <span class="indicator" onclick="currentSlide(4)"></span>
+            <span class="indicator" onclick="currentSlide(5)"></span>
+            <span class="indicator" onclick="currentSlide(6)"></span>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>Quality Products</h3>
+                <p>Gear used by professional players worldwide</p>
+            </div>
+            <div class="feature-card">
+                <h3>Fast Shipping</h3>
+                <p>Free shipping on orders over $99, delivered in 2-3 days</p>
+            </div>
+            <div class="feature-card">
+                <h3>Authentic Products</h3>
+                <p>100% authentic products with warranty</p>
+            </div>
+            <div class="feature-card">
+                <h3>Customer Support</h3>
+                <p>Get help from our soccer equipment team</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Products Section - Dynamic from Database -->
+<section class="products-section" id="products">
+    <div class="container">
+        <div class="section-header">
+            <h2>Our Collection</h2>
+            <p>Shop soccer equipment from top brands</p>
+        </div>
+        
+        <!-- Category Filter -->
+        <div class="category-filter">
+            <button class="filter-btn active" onclick="filterProducts('all')">All Products</button>
+            <button class="filter-btn" onclick="filterProducts('Boots')">Football Boots</button>
+            <button class="filter-btn" onclick="filterProducts('Jersey')">Jerseys</button>
+            <button class="filter-btn" onclick="filterProducts('Others')">Accessories</button>
+        </div>
+        
+        <!-- Dynamic Products Grid from Database -->
+        <div class="products-grid" id="productsGrid">
+            <div th:each="item : ${items}" class="product-card" th:attr="data-category=${item.category}">
+                <form action="/order" method="post" class="product-form">
+                    <input type="hidden" name="name" th:value="${item.name}">
+                    <input type="hidden" name="category" th:value="${item.category}">
+                    <input type="hidden" name="price" th:value="${item.price}">
+                    <input type="hidden" name="gender" th:value="${item.gender}">
+                    <input type="hidden" name="image" th:value="${item.image}">
+                    
+                    <div class="product-image-container">
+                        <img th:src="@{'/image/' + ${item.image}}" th:alt="${item.name}" class="product-image"/>
+                        <div class="product-badge" th:text="${item.category}"></div>
+                    </div>
+                    
+                    <div class="product-info">
+                        <h3 class="product-name" th:text="${item.name}"></h3>
+                        <div class="product-details">
+                            <div class="detail-row">
+                                <span class="detail-label">Category:</span>
+                                <span class="detail-value" th:text="${item.category}"></span>
+                            </div>
+                            <div class="detail-row" th:if="${item.gender != null}">
+                                <span class="detail-label">Gender:</span>
+                                <span class="detail-value" th:text="${item.gender}"></span>
+                            </div>
+                        </div>
+                        <div class="product-price">
+                            <span class="currency">$</span>
+                            <span class="amount" th:text="${item.price}"></span>
+                        </div>
+                        <div class="product-actions">
+                            <div class="quantity-selector">
+                                <button type="button" class="qty-btn" onclick="decreaseQty(this)">-</button>
+                                <input type="number" name="quantity" value="1" min="1" class="qty-input" readonly>
+                                <button type="button" class="qty-btn" onclick="increaseQty(this)">+</button>
+                            </div>
+                            <div class="size-selector">
+                                <select name="size" class="size-select" required>
+                                    <option value="">Select Size</option>
+                                    <option value="S">S</option>
+                                    <option value="M">M</option>
+                                    <option value="L">L</option>
+                                    <option value="XL">XL</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(items)}" class="empty-products">
+            <p>No products available at the moment. Check back soon!</p>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="main-footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>HuSoccer</h4>
+                <p>Your destination for soccer equipment and gear.</p>
+            </div>
+            <div class="footer-section">
+                <h5>Quick Links</h5>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Shipping Info</a></li>
+                    <li><a href="#">Returns</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h5>Contact Info</h5>
+                <p>1-800-SOCCER</p>
+                <p>info@husoccer.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 HuSoccer. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
 
 <script>
+    // Slideshow functionality
+    let slideIndex = 1;
+    showSlides(slideIndex);
+
+    function changeSlide(n) {
+        showSlides(slideIndex += n);
+    }
+
+    function currentSlide(n) {
+        showSlides(slideIndex = n);
+    }
+
+    function showSlides(n) {
+        let slides = document.getElementsByClassName("slide");
+        let indicators = document.getElementsByClassName("indicator");
+        
+        if (n > slides.length) { slideIndex = 1 }
+        if (n < 1) { slideIndex = slides.length }
+        
+        for (let i = 0; i < slides.length; i++) {
+            slides[i].classList.remove("active");
+        }
+        for (let i = 0; i < indicators.length; i++) {
+            indicators[i].classList.remove("active");
+        }
+        
+        slides[slideIndex - 1].classList.add("active");
+        indicators[slideIndex - 1].classList.add("active");
+    }
+
+    // Auto-advance slideshow
+    setInterval(() => {
+        changeSlide(1);
+    }, 5000);
+
+    // Category filter functionality
+    function filterProducts(category) {
+        const products = document.querySelectorAll('.product-card');
+        const buttons = document.querySelectorAll('.filter-btn');
+        
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        products.forEach(product => {
+            if (category === 'all') {
+                product.style.display = 'block';
+            } else {
+                const productCategory = product.getAttribute('data-category');
+                product.style.display = productCategory === category ? 'block' : 'none';
+            }
+        });
+    }
+
+    // Quantity controls
     function decreaseQty(btn) {
         let input = btn.parentNode.querySelector(".qty-input");
         if (parseInt(input.value) > 1) {
@@ -72,7 +296,17 @@
         let input = btn.parentNode.querySelector(".qty-input");
         input.value = parseInt(input.value) + 1;
     }
+
+    // Smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
 </script>
 </body>
 </html>
-

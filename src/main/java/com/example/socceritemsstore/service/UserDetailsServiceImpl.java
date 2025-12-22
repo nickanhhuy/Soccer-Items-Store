@@ -29,10 +29,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
+        
+        String role = user.getRole();
+        System.out.println("DEBUG: Loading user: " + userName + ", Role from DB: " + role);
+        
+        // Remove ROLE_ prefix if it exists in the database
+        String roleWithoutPrefix = role != null ? role.replace("ROLE_", "") : "USER";
+        System.out.println("DEBUG: Role after processing: " + roleWithoutPrefix);
+        
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUserName())
                 .password(user.getPassword())
-                .roles(user.getRole().replace("ROLE_", ""))
+                .roles(roleWithoutPrefix)
                 .build();
     }
 }

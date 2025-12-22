@@ -1,49 +1,355 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Order Cart</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Your Order - HuSoccer</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/menu.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body style="background-color: lightslategray; justify-content: center; align-items: center;">
-<div class="order-container">
-    <h2 style="text-align: center">My Orders</h2>
-    <br>
-    <br>
-    <br>
-    <table class="table table-striped table-hover align-middle">
-        <thead>
-        <tr>
-            <th>Item Name</th>
-            <th>Category</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Gender</th>
-            <th>Sizes</th>
-            <th>Total</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="item : ${items}">
-            <td th:text="${item.getName()}"></td>
-            <td th:text="${item.getCategory()}"></td>
-            <td th:text="${item.getQuantity()}"></td>
-            <td th:text="${item.getPrice()}"></td>
-            <td th:text="${item.getGender()}"></td>
-            <td th:text="${item.getSizes()}"></td>
-            <td th:text="${item.getQuantity() * item.getPrice}"></td>
-        </tr>
-        </tbody>
-    </table>
-    <div class="total-container">
-        <h3>Total: <span th:text="'$' + ${total}"></span></h3>
-    </div>
-
-    <div class="btn-container">
-        <a th:href="@{/menu}" class="btn btn-primary">Continue Shopping</a>
-        <a th:href="@{/checkout}" class="btn btn-primary">Checkout</a>
+<body>
+<!-- Top Bar -->
+<div class="top-bar">
+    <div class="container">
+        <div class="top-bar-content">
+            <span>Free shipping on orders over $99</span>
+            <div class="top-bar-right">
+                <span>1-800-SOCCER</span>
+                <span>info@husoccer.com</span>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Main Header -->
+<header class="main-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="site-name">
+                <h1>HuSoccer</h1>
+            </div>
+            
+            <nav class="main-nav">
+                <a th:href="@{/menu}" class="nav-link">
+                    Shop
+                </a>
+                <a th:href="@{/history}" class="nav-link">
+                    History
+                </a>
+                <a th:href="@{/admin}" class="nav-link">
+                    Admin
+                </a>
+            </nav>
+            
+            <div class="header-actions">
+                <div th:if="${username == null}" class="auth-buttons">
+                    <a th:href="@{/register}" class="btn btn-outline">
+                        Login / Sign Up
+                    </a>
+                </div>
+                <div th:if="${username != null}" class="user-menu">
+                    <span class="welcome-text">
+                        Hi, <span th:text="${username}"></span>
+                    </span>
+                    <form th:action="@{/logout}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-primary">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Order Section -->
+<section class="order-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Your Order</h2>
+            <p>Review your items and complete your order</p>
+        </div>
+        
+        <div class="order-content">
+            <!-- Order Items -->
+            <div class="order-items">
+                <h3>Order Items</h3>
+                <div class="items-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Size</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${items}">
+                                <td>
+                                    <div class="product-info">
+                                        <img th:src="@{'/image/' + ${item.image}}" alt="Product" class="order-image">
+                                        <div>
+                                            <div th:text="${item.name}"></div>
+                                            <small th:text="${item.category}"></small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${item.sizes[0]}"></td>
+                                <td th:text="${item.quantity}"></td>
+                                <td>$<span th:text="${item.price}"></span></td>
+                                <td class="total-price">$<span th:text="${#numbers.formatDecimal(item.price * item.quantity, 1, 2)}"></span></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="total-row">
+                                <td colspan="4" class="text-right"><strong>Total:</strong></td>
+                                <td class="grand-total">$<span th:text="${#numbers.formatDecimal(total, 1, 2)}"></span></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Shipping and Payment Form -->
+            <div class="checkout-form">
+                <h3>Shipping & Payment Information</h3>
+                <form th:action="@{/checkout}" method="post">
+                    <div class="form-section">
+                        <h4>Shipping Address</h4>
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" name="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Street Address</label>
+                            <input type="text" id="address" name="address" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="city">City</label>
+                                <input type="text" id="city" name="city" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="state">State</label>
+                                <input type="text" id="state" name="state" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="zipCode">Zip Code</label>
+                                <input type="text" id="zipCode" name="zipCode" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h4>Payment Method</h4>
+                        <div class="form-group">
+                            <label for="paymentMethod">Select Payment Method</label>
+                            <select id="paymentMethod" name="paymentMethod" required>
+                                <option value="">Choose payment method</option>
+                                <option value="Credit Card">Credit Card</option>
+                                <option value="Debit Card">Debit Card</option>
+                                <option value="PayPal">PayPal</option>
+                                <option value="Cash on Delivery">Cash on Delivery</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" name="total" th:value="${total}">
+                    
+                    <div class="form-actions">
+                        <a th:href="@{/menu}" class="btn btn-outline">Continue Shopping</a>
+                        <button type="submit" class="btn btn-primary">Proceed to Checkout</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="main-footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>HuSoccer</h4>
+                <p>Your destination for soccer equipment and gear.</p>
+            </div>
+            <div class="footer-section">
+                <h5>Contact Info</h5>
+                <p>1-800-SOCCER</p>
+                <p>info@husoccer.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 HuSoccer. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<style>
+.order-section {
+    padding: 80px 0;
+    background-color: #f9fafb;
+    min-height: 60vh;
+}
+
+.order-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+}
+
+.order-items,
+.checkout-form {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.order-items h3,
+.checkout-form h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #1a1a1a;
+}
+
+.items-table {
+    overflow-x: auto;
+}
+
+.items-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.items-table th {
+    background: #f9fafb;
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #1a1a1a;
+    border-bottom: 2px solid #e5e5e5;
+}
+
+.items-table td {
+    padding: 20px 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.product-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.order-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.total-price {
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.total-row {
+    background: #f9fafb;
+}
+
+.total-row td {
+    padding: 20px 15px;
+    font-size: 18px;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.grand-total {
+    font-size: 24px;
+    font-weight: 700;
+    color: #4ade80;
+}
+
+.form-section {
+    margin-bottom: 30px;
+}
+
+.form-section h4 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #1a1a1a;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e5e5e5;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e5e5e5;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #4ade80;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: flex-end;
+    margin-top: 30px;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+    
+    .order-image {
+        width: 40px;
+        height: 40px;
+    }
+}
+</style>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </html>
