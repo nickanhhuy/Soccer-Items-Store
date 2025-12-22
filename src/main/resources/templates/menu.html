@@ -133,6 +133,26 @@
             <p>Shop soccer equipment from top brands</p>
         </div>
         
+        <!-- Search and Filter Bar -->
+        <div class="search-filter-bar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
+                <span class="search-icon">🔍</span>
+            </div>
+            
+            <div class="sort-box">
+                <label for="sortSelect">Sort by:</label>
+                <select id="sortSelect" onchange="sortProducts()">
+                    <option value="default">Default</option>
+                    <option value="name-asc">Name (A-Z)</option>
+                    <option value="name-desc">Name (Z-A)</option>
+                    <option value="price-asc">Price (Low to High)</option>
+                    <option value="price-desc">Price (High to Low)</option>
+                    <option value="stock">In Stock First</option>
+                </select>
+            </div>
+        </div>
+        
         <!-- Category Filter -->
         <div class="category-filter">
             <button class="filter-btn active" onclick="filterProducts('all')">All Products</button>
@@ -141,15 +161,28 @@
             <button class="filter-btn" onclick="filterProducts('Others')">Accessories</button>
         </div>
         
+        <!-- Results Count -->
+        <div class="results-info">
+            <span id="resultsCount"></span>
+        </div>
+        
         <!-- Dynamic Products Grid from Database -->
         <div class="products-grid" id="productsGrid">
-            <div th:each="item : ${items}" class="product-card" th:attr="data-category=${item.category}">
+            <div th:each="item : ${items}" class="product-card" 
+                 th:attr="data-category=${item.category}, data-name=${item.name}, data-price=${item.price}, data-stock=${item.quantity}">
                 <form action="/order" method="post" class="product-form">
                     <input type="hidden" name="name" th:value="${item.name}">
                     <input type="hidden" name="category" th:value="${item.category}">
                     <input type="hidden" name="price" th:value="${item.price}">
                     <input type="hidden" name="gender" th:value="${item.gender}">
                     <input type="hidden" name="image" th:value="${item.image}">
+                    
+                    <!-- Stock Badge -->
+                    <div th:if="${item.quantity <= 0}" class="stock-badge out-of-stock">Out of Stock</div>
+                    <div th:if="${item.quantity > 0 && item.quantity <= 10}" class="stock-badge low-stock">
+                        Only <span th:text="${item.quantity}"></span> left!
+                    </div>
+                    <div th:if="${item.quantity > 10}" class="stock-badge in-stock">In Stock</div>
                     
                     <div class="product-image-container">
                         <img th:src="@{'/image/' + ${item.image}}" th:alt="${item.name}" class="product-image"/>
@@ -167,15 +200,19 @@
                                 <span class="detail-label">Gender:</span>
                                 <span class="detail-value" th:text="${item.gender}"></span>
                             </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Stock:</span>
+                                <span class="detail-value stock-quantity" th:text="${item.quantity} + ' available'"></span>
+                            </div>
                         </div>
                         <div class="product-price">
                             <span class="currency">$</span>
                             <span class="amount" th:text="${item.price}"></span>
                         </div>
-                        <div class="product-actions">
+                        <div class="product-actions" th:if="${item.quantity > 0}">
                             <div class="quantity-selector">
                                 <button type="button" class="qty-btn" onclick="decreaseQty(this)">-</button>
-                                <input type="number" name="quantity" value="1" min="1" class="qty-input" readonly>
+                                <input type="number" name="quantity" value="1" min="1" th:max="${item.quantity}" class="qty-input" readonly>
                                 <button type="button" class="qty-btn" onclick="increaseQty(this)">+</button>
                             </div>
                             <div class="size-selector">
@@ -189,12 +226,19 @@
                             </div>
                             <button type="submit" class="btn btn-primary add-to-cart">Add to Cart</button>
                         </div>
+                        <div class="product-actions" th:if="${item.quantity <= 0}">
+                            <button type="button" class="btn btn-disabled" disabled>Out of Stock</button>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
         
         <!-- Empty State -->
+        <div id="noResults" class="empty-products" style="display: none;">
+            <p>No products found matching your search.</p>
+        </div>
+        
         <div th:if="${#lists.isEmpty(items)}" class="empty-products">
             <p>No products available at the moment. Check back soon!</p>
         </div>
@@ -266,10 +310,59 @@
         changeSlide(1);
     }, 5000);
 
+    // Search functionality
+    function searchProducts() {
+        const searchInput = document.getElementById('searchInput').value.toLowerCase();
+        const products = document.querySelectorAll('.product-card');
+        let visibleCount = 0;
+        
+        products.forEach(product => {
+            const productName = product.getAttribute('data-name').toLowerCase();
+            const isVisible = productName.includes(searchInput);
+            
+            if (isVisible) {
+                product.style.display = 'block';
+                visibleCount++;
+            } else {
+                product.style.display = 'none';
+            }
+        });
+        
+        updateResultsCount(visibleCount);
+        document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+
+    // Sort functionality
+    function sortProducts() {
+        const sortValue = document.getElementById('sortSelect').value;
+        const grid = document.getElementById('productsGrid');
+        const products = Array.from(document.querySelectorAll('.product-card'));
+        
+        products.sort((a, b) => {
+            switch(sortValue) {
+                case 'name-asc':
+                    return a.getAttribute('data-name').localeCompare(b.getAttribute('data-name'));
+                case 'name-desc':
+                    return b.getAttribute('data-name').localeCompare(a.getAttribute('data-name'));
+                case 'price-asc':
+                    return parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price'));
+                case 'price-desc':
+                    return parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price'));
+                case 'stock':
+                    return parseInt(b.getAttribute('data-stock')) - parseInt(a.getAttribute('data-stock'));
+                default:
+                    return 0;
+            }
+        });
+        
+        products.forEach(product => grid.appendChild(product));
+    }
+
     // Category filter functionality
     function filterProducts(category) {
         const products = document.querySelectorAll('.product-card');
         const buttons = document.querySelectorAll('.filter-btn');
+        let visibleCount = 0;
         
         buttons.forEach(btn => btn.classList.remove('active'));
         event.target.classList.add('active');
@@ -277,14 +370,35 @@
         products.forEach(product => {
             if (category === 'all') {
                 product.style.display = 'block';
+                visibleCount++;
             } else {
                 const productCategory = product.getAttribute('data-category');
-                product.style.display = productCategory === category ? 'block' : 'none';
+                if (productCategory === category) {
+                    product.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    product.style.display = 'none';
+                }
             }
         });
+        
+        updateResultsCount(visibleCount);
+        document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
     }
 
-    // Quantity controls
+    // Update results count
+    function updateResultsCount(count) {
+        const resultsCount = document.getElementById('resultsCount');
+        resultsCount.textContent = `Showing ${count} product${count !== 1 ? 's' : ''}`;
+    }
+
+    // Initialize results count on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        const products = document.querySelectorAll('.product-card');
+        updateResultsCount(products.length);
+    });
+
+    // Quantity controls with stock limit
     function decreaseQty(btn) {
         let input = btn.parentNode.querySelector(".qty-input");
         if (parseInt(input.value) > 1) {
@@ -294,7 +408,14 @@
 
     function increaseQty(btn) {
         let input = btn.parentNode.querySelector(".qty-input");
-        input.value = parseInt(input.value) + 1;
+        const maxStock = parseInt(input.getAttribute('max'));
+        const currentValue = parseInt(input.value);
+        
+        if (currentValue < maxStock) {
+            input.value = currentValue + 1;
+        } else {
+            alert(`Sorry, only ${maxStock} items available in stock.`);
+        }
     }
 
     // Smooth scrolling
