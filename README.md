@@ -1,4 +1,4 @@
-# HuSoccer Shop - Soccer Equipment E-commerce Platform
+# HuSoccer Shop - Soccer Equipment E-commerce Website
 
 ![AWS Architecture](HuSoccerShop_AWS.drawio.png)
 
