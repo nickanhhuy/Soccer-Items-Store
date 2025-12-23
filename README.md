@@ -1,4 +1,4 @@
-# HuSoccer Shop - Soccer Equipment E-commerce Platform
+# HuSoccer Shop - Soccer Equipment E-commerce Website
 
 ![AWS Architecture](HuSoccerShop_AWS.drawio.png)
 
@@ -362,20 +362,5 @@ The project supports automated deployment with GitHub Actions for testing, Docke
 4. Push to branch (`git push origin feature/new-feature`)
 5. Create Pull Request
 
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Author
-**[Your Name]**
-- Website: [husoccershop.store](https://husoccershop.store)
-- Email: [your-email@domain.com]
-
-## Acknowledgments
-- Spring Boot community for excellent documentation
-- AWS for reliable cloud infrastructure
-- Let's Encrypt for free SSL certificates
-- Docker for containerization technology
-
----
 
 **Built with passion for soccer and technology!**
