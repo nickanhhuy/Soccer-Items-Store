@@ -1,6 +1,7 @@
 package com.example.socceritemsstore.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "order_items")
@@ -10,25 +11,39 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @NotNull(message = "Order is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
     
+    @NotBlank(message = "Product name is required")
+    @Size(min = 2, max = 100, message = "Product name must be between 2 and 100 characters")
     @Column(nullable = false)
     private String productName;
     
+    @NotBlank(message = "Category is required")
+    @Pattern(regexp = "^(Boots|Jersey|Others)$", message = "Category must be Boots, Jersey, or Others")
     @Column(nullable = false)
     private String category;
     
+    @NotBlank(message = "Size is required")
+    @Pattern(regexp = "^(XS|S|M|L|XL|XXL|\\d{2,3})$", message = "Size must be XS, S, M, L, XL, XXL, or shoe size (e.g., 42)")
     @Column(nullable = false)
     private String size;
     
+    @NotNull(message = "Quantity is required")
+    @Min(value = 1, message = "Quantity must be at least 1")
+    @Max(value = 99, message = "Quantity cannot exceed 99")
     @Column(nullable = false)
     private Integer quantity;
     
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "0.01", message = "Price must be greater than 0")
+    @DecimalMax(value = "9999.99", message = "Price cannot exceed $9999.99")
     @Column(nullable = false)
     private Double price;
     
+    @Size(max = 255, message = "Image path cannot exceed 255 characters")
     private String image;
     
     public OrderItem() {}
@@ -107,7 +122,8 @@ public class OrderItem {
         this.image = image;
     }
     
+    @Transient
     public Double getSubtotal() {
-        return price * quantity;
+        return price != null && quantity != null ? price * quantity : 0.0;
     }
 }

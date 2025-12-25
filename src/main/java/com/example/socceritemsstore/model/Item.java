@@ -1,8 +1,7 @@
 package com.example.socceritemsstore.model;
 
-
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 import java.util.List;
 
 @Entity
@@ -14,13 +13,29 @@ public class Item {
     public Long id;
 
     @NotBlank(message = "Item name is required")
+    @Size(min = 2, max = 100, message = "Item name must be between 2 and 100 characters")
     public String name;
+
     @NotBlank(message = "Category is required")
+    @Pattern(regexp = "^(Boots|Jersey|Others)$", message = "Category must be Boots, Jersey, or Others")
     public String category;
+
+    @NotNull(message = "Quantity is required")
+    @Min(value = 0, message = "Quantity cannot be negative")
+    @Max(value = 9999, message = "Quantity cannot exceed 9999")
     public Integer quantity;
+
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "0.01", message = "Price must be greater than 0")
+    @DecimalMax(value = "9999.99", message = "Price cannot exceed $9999.99")
     public Double price;
+
+    @Pattern(regexp = "^(Male|Female|Unisex)$", message = "Gender must be Male, Female, or Unisex")
     public String gender;
+
+    @Size(max = 255, message = "Image path cannot exceed 255 characters")
     public String image;
+
     @ElementCollection
     private List<String> sizes;
 

@@ -1,6 +1,7 @@
 package com.example.socceritemsstore.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,30 +14,53 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @NotBlank(message = "Username is required")
+    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
     @Column(nullable = false)
     private String username;
     
+    @NotBlank(message = "Full name is required")
+    @Size(min = 2, max = 100, message = "Full name must be between 2 and 100 characters")
+    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Full name can only contain letters and spaces")
     @Column(nullable = false)
     private String fullName;
     
+    @NotBlank(message = "Address is required")
+    @Size(min = 5, max = 200, message = "Address must be between 5 and 200 characters")
     @Column(nullable = false)
     private String address;
     
+    @NotBlank(message = "City is required")
+    @Size(min = 2, max = 50, message = "City must be between 2 and 50 characters")
+    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "City can only contain letters and spaces")
     @Column(nullable = false)
     private String city;
     
+    @NotBlank(message = "State is required")
+    @Size(min = 2, max = 50, message = "State must be between 2 and 50 characters")
+    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "State can only contain letters and spaces")
     @Column(nullable = false)
     private String state;
     
+    @NotBlank(message = "ZIP code is required")
+    @Pattern(regexp = "^\\d{5}(-\\d{4})?$", message = "ZIP code must be in format 12345 or 12345-6789")
     @Column(nullable = false)
     private String zipCode;
     
+    @NotBlank(message = "Phone number is required")
+    @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Please provide a valid phone number")
     @Column(nullable = false)
     private String phone;
     
+    @NotBlank(message = "Payment method is required")
+    @Pattern(regexp = "^(Credit Card|Debit Card|PayPal|Cash on Delivery)$", 
+             message = "Payment method must be Credit Card, Debit Card, PayPal, or Cash on Delivery")
     @Column(nullable = false)
     private String paymentMethod;
     
+    @NotNull(message = "Total amount is required")
+    @DecimalMin(value = "0.01", message = "Total amount must be greater than 0")
+    @DecimalMax(value = "99999.99", message = "Total amount cannot exceed $99999.99")
     @Column(nullable = false)
     private Double totalAmount;
     
@@ -44,6 +68,7 @@ public class Order {
     private LocalDateTime orderDate = LocalDateTime.now();
     
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Size(min = 1, message = "Order must contain at least one item")
     private List<OrderItem> orderItems = new ArrayList<>();
     
     public Order() {

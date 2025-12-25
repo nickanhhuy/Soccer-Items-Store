@@ -10,15 +10,18 @@ import com.example.socceritemsstore.service.OrderService;
 import com.example.socceritemsstore.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -105,7 +108,9 @@ public class MainController {
     }
     
     @PostMapping("/checkout")
-    public String processCheckout(@RequestParam String fullName,
+    public String processCheckout(@Valid @ModelAttribute("order") Order order,
+                                   BindingResult bindingResult,
+                                   @RequestParam String fullName,
                                    @RequestParam String address,
                                    @RequestParam String city,
                                    @RequestParam String state,
@@ -115,47 +120,64 @@ public class MainController {
                                    @RequestParam Double total,
                                    Model model,
                                    Authentication authentication,
-                                   HttpSession session) {
+                                   HttpSession session,
+                                   RedirectAttributes redirectAttributes) {
         String username = "Guest";
         if (authentication != null && authentication.isAuthenticated()) {
             username = authentication.getName();
             model.addAttribute("username", username);
         }
         
-        // Create and save order to database
-        Order order = new Order(username, fullName, address, city, state, zipCode, phone, paymentMethod, total);
-        
-        // Get cart items from session
-        List<Item> cartItems = (List<Item>) session.getAttribute("orders");
-        if (cartItems != null) {
-            for (Item item : cartItems) {
-                OrderItem orderItem = new OrderItem(
-                    item.getName(),
-                    item.getCategory(),
-                    item.getSizes() != null && !item.getSizes().isEmpty() ? item.getSizes().get(0) : "N/A",
-                    item.getQuantity(),
-                    item.getPrice(),
-                    item.getImage()
-                );
-                order.addOrderItem(orderItem);
-            }
+        // Validate order data
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errorMessage", "Please correct the errors in the form");
+            return "checkout";
         }
         
-        // Save order to database
-        orderService.saveOrder(order);
-        
-        // Pass order details to checkout page
-        model.addAttribute("fullName", fullName);
-        model.addAttribute("address", address);
-        model.addAttribute("city", city);
-        model.addAttribute("state", state);
-        model.addAttribute("zipCode", zipCode);
-        model.addAttribute("phone", phone);
-        model.addAttribute("paymentMethod", paymentMethod);
-        model.addAttribute("total", total);
-        
-        // Clear the cart after successful checkout
-        session.setAttribute("orders", new ArrayList<Item>());
+        try {
+            // Create and save order to database
+            Order newOrder = new Order(username, fullName, address, city, state, zipCode, phone, paymentMethod, total);
+            
+            // Get cart items from session
+            List<Item> cartItems = (List<Item>) session.getAttribute("orders");
+            if (cartItems != null && !cartItems.isEmpty()) {
+                for (Item item : cartItems) {
+                    OrderItem orderItem = new OrderItem(
+                        item.getName(),
+                        item.getCategory(),
+                        item.getSizes() != null && !item.getSizes().isEmpty() ? item.getSizes().get(0) : "N/A",
+                        item.getQuantity(),
+                        item.getPrice(),
+                        item.getImage()
+                    );
+                    newOrder.addOrderItem(orderItem);
+                }
+            } else {
+                model.addAttribute("errorMessage", "Your cart is empty");
+                return "checkout";
+            }
+            
+            // Save order to database
+            orderService.saveOrder(newOrder);
+            
+            // Pass order details to checkout page
+            model.addAttribute("fullName", fullName);
+            model.addAttribute("address", address);
+            model.addAttribute("city", city);
+            model.addAttribute("state", state);
+            model.addAttribute("zipCode", zipCode);
+            model.addAttribute("phone", phone);
+            model.addAttribute("paymentMethod", paymentMethod);
+            model.addAttribute("total", total);
+            model.addAttribute("successMessage", "Order placed successfully!");
+            
+            // Clear the cart after successful checkout
+            session.setAttribute("orders", new ArrayList<Item>());
+            
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Error processing order: " + e.getMessage());
+            return "checkout";
+        }
         
         return "checkout";
     }
@@ -195,34 +217,61 @@ public class MainController {
     //For admin only
     @GetMapping("/admin")
     public String addItem(Model model, Authentication authentication) {
+        // Check if user is authenticated
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "error/403";
+        }
+        
         // Check if user is admin
-        if (authentication != null && authentication.isAuthenticated()) {
-            String username = authentication.getName();
-            Optional<User> userOptional = userRepo.findByUserName(username);
-            
-            if (userOptional.isPresent()) {
-                User user = userOptional.get();
-                if ("ADMIN".equals(user.getRole())) {
-                    model.addAttribute("username", username);
-                    model.addAttribute("items", itemService.getAllItems());
-                    model.addAttribute("item", new Item());
-                    
-                    // Get all orders for admin
-                    List<com.example.socceritemsstore.model.Order> allOrders = orderService.getAllOrders();
-                    model.addAttribute("allOrders", allOrders);
-                    
-                    return "admin";
-                }
+        String username = authentication.getName();
+        Optional<User> userOptional = userRepo.findByUserName(username);
+        
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            if ("ADMIN".equals(user.getRole())) {
+                model.addAttribute("username", username);
+                model.addAttribute("items", itemService.getAllItems());
+                model.addAttribute("item", new Item());
+                
+                // Get all orders for admin
+                List<com.example.socceritemsstore.model.Order> allOrders = orderService.getAllOrders();
+                model.addAttribute("allOrders", allOrders);
+                
+                return "admin";
             }
         }
         
-        // If not admin, redirect to menu
-        return "redirect:/menu?accessDenied";
+        // If not admin, show 403 error page
+        return "error/403";
     }
-    // Admin: Save item
+    // Admin: Save item with validation
     @PostMapping("/admin/saveItem")
-    public String saveItem(@ModelAttribute Item item) {
-        itemService.addItemOrder(item);
+    public String saveItem(@Valid @ModelAttribute("item") Item item, 
+                          BindingResult bindingResult,
+                          Model model,
+                          RedirectAttributes redirectAttributes,
+                          Authentication authentication) {
+        // Check for validation errors
+        if (bindingResult.hasErrors()) {
+            // Add error messages to model
+            model.addAttribute("items", itemService.getAllItems());
+            model.addAttribute("allOrders", orderService.getAllOrders());
+            
+            if (authentication != null && authentication.isAuthenticated()) {
+                model.addAttribute("username", authentication.getName());
+            }
+            
+            // Return to admin page with errors
+            return "admin";
+        }
+        
+        try {
+            itemService.addItemOrder(item);
+            redirectAttributes.addFlashAttribute("successMessage", "Product saved successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error saving product: " + e.getMessage());
+        }
+        
         return "redirect:/admin";
     }
     
