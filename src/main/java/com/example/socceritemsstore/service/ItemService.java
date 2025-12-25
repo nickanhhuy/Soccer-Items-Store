@@ -4,7 +4,6 @@ import com.example.socceritemsstore.exception.InvalidRequestException;
 import com.example.socceritemsstore.exception.ResourceNotFoundException;
 import com.example.socceritemsstore.model.Item;
 import com.example.socceritemsstore.repository.ItemRepo;
-import com.example.socceritemsstore.util.ValidationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,12 +32,12 @@ public class ItemService {
         
         validateItem(item);
         
-        existing.setItem_name(item.getItem_name());
+        existing.setName(item.getName());
         existing.setPrice(item.getPrice());
         existing.setQuantity(item.getQuantity());
         existing.setCategory(item.getCategory());
         existing.setGender(item.getGender());
-        existing.setImageUrl(item.getImageUrl());
+        existing.setImage(item.getImage());
         
         return itemRepo.save(existing);
     }
@@ -64,7 +63,7 @@ public class ItemService {
         int newQuantity = item.getQuantity() - quantity;
         
         if (newQuantity < 0) {
-            throw new InvalidRequestException("Insufficient stock for item: " + item.getItem_name());
+            throw new InvalidRequestException("Insufficient stock for item: " + item.getName());
         }
         
         item.setQuantity(newQuantity);
@@ -75,13 +74,13 @@ public class ItemService {
         if (item == null) {
             throw new InvalidRequestException("Item cannot be null");
         }
-        if (ValidationUtils.isNullOrEmpty(item.getItem_name())) {
+        if (item.getName() == null || item.getName().trim().isEmpty()) {
             throw new InvalidRequestException("Item name is required");
         }
-        if (!ValidationUtils.isValidPrice(item.getPrice())) {
+        if (item.getPrice() == null || item.getPrice() < 0.01 || item.getPrice() > 9999.99) {
             throw new InvalidRequestException("Invalid price. Must be between 0.01 and 9999.99");
         }
-        if (!ValidationUtils.isValidQuantity(item.getQuantity())) {
+        if (item.getQuantity() == null || item.getQuantity() < 0 || item.getQuantity() > 9999) {
             throw new InvalidRequestException("Invalid quantity. Must be between 0 and 9999");
         }
     }

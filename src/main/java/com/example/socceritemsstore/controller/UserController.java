@@ -30,29 +30,18 @@ public class UserController {
     }
     
     @PostMapping("/register")
-    public String register(@Valid @ModelAttribute("user") User user,
-                           BindingResult bindingResult,
-                           @RequestParam String userName,
+    public String register(@RequestParam String userName,
                            @RequestParam String password,
                            @RequestParam String email,
                            Model model,
                            RedirectAttributes redirectAttributes) {
-        // Check for validation errors
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("errorMessage", "Please correct the errors in the form");
-            return "register";
-        }
-        
         try {
             userService.registration(userName, password, email);
             redirectAttributes.addFlashAttribute("successMessage", "Registration successful! Please login.");
             return "redirect:/login?registered";
-        } catch (IllegalArgumentException e) {
-            // Handle duplicate username or email
+        } catch (Exception e) {
+            // Handle all exceptions
             model.addAttribute("errorMessage", e.getMessage());
-            return "register";
-        } catch (IOException e) {
-            model.addAttribute("errorMessage", "Error during registration. Please try again.");
             return "register";
         }
     }

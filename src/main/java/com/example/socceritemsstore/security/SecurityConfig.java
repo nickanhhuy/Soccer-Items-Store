@@ -25,6 +25,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorize -> {
             authorize.requestMatchers("/css/**", "/js/**", "/static/image/**").permitAll()
                     .requestMatchers("/register", "/login").permitAll()
+                    .requestMatchers("/test-email*", "/test-email-form*").permitAll() // Allow email testing
                     .requestMatchers("/admin").hasRole("ADMIN") // admin page access: adding, updating or delete items
                     .requestMatchers("/order", "/receipt", "/history", "/checkout").hasAnyRole("USER", "ADMIN")//authorized users can access to those pages
                     .anyRequest().authenticated(); // All other requests require authentication
