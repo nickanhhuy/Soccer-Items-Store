@@ -1,10 +1,10 @@
-# Exclude HTML templates from language statistics
-*.html linguist-vendored
-*.css linguist-vendored
+# # Exclude HTML templates from language statistics
+# *.html linguist-vendored
+# *.css linguist-vendored
 
-# Mark Java as the primary language
-*.java linguist-language=Java
+# # Mark Java as the primary language
+# *.java linguist-language=Java
 
-# Exclude generated files
-target/** linguist-generated
-*.class linguist-generated
+# # Exclude generated files
+# target/** linguist-generated
+# *.class linguist-generated
