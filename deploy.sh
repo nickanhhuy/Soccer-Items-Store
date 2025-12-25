@@ -1,22 +1,18 @@
 #!/bin/bash
 
-echo "Starting Soccer Store deployment..."
+echo "Starting Soccer Store deployment on EC2..."
 
 # Stop existing containers
 echo "Stopping existing containers..."
-docker-compose down
-
-# Removeold images (optional - saves space)
-echo "Cleaning up old images..."
-docker image prune -f
+docker-compose down -v
 
 # Build and start containers
 echo "Building and starting containers..."
 docker-compose up -d --build
 
-# Wait a moment for containers to start
+# Wait for containers to start
 echo "Waiting for containers to start..."
-sleep 10
+sleep 30
 
 # Check container status
 echo "Checking container status..."
@@ -24,8 +20,19 @@ docker-compose ps
 
 # Show logs
 echo "Recent application logs:"
-docker-compose logs app --tail 20
+docker-compose logs app --tail 30
 
+# Get public IP
+PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null || echo "localhost")
+
+echo "========================================="
 echo "Deployment complete!"
-echo "Access your application at: http://localhost:8080"
-echo "View logs with: docker-compose logs -f app"
+echo "========================================="
+echo "Application URL: http://$PUBLIC_IP:8080"
+echo "Admin Login: huynguyen / admin123"
+echo ""
+echo "Useful commands:"
+echo "  View logs: docker-compose logs -f"
+echo "  Stop app: docker-compose down"
+echo "  Restart: docker-compose restart"
+echo "========================================="

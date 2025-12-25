@@ -24,14 +24,23 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // Create admin user if it doesn't exist
-        if (!userRepo.findByUserName("huynguyen").isPresent()) {
+        String adminUsername = System.getenv("ADMIN_USERNAME");
+        String adminPassword = System.getenv("ADMIN_PASSWORD");
+        String adminEmail = System.getenv("ADMIN_EMAIL");
+        
+        // Use defaults if environment variables are not set (for local development)
+        if (adminUsername == null) adminUsername = "admin";
+        if (adminPassword == null) adminPassword = "admin123";
+        if (adminEmail == null) adminEmail = "admin@husoccer.com";
+        
+        if (!userRepo.findByUserName(adminUsername).isPresent()) {
             User admin = new User();
-            admin.setUserName("huynguyen");
-            admin.setPassword(passwordEncoder.encode("admin123")); // Change this password!
-            admin.setEmail("huynguyen@husoccer.com");
+            admin.setUserName(adminUsername);
+            admin.setPassword(passwordEncoder.encode(adminPassword));
+            admin.setEmail(adminEmail);
             admin.setRole("ADMIN");
             userRepo.save(admin);
-            System.out.println("Admin user 'huynguyen' created with password 'admin123'");
+            System.out.println("Admin user '" + adminUsername + "' created successfully");
         }
 
         // Add sample products if database is empty

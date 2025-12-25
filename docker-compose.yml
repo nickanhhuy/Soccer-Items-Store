@@ -3,10 +3,10 @@ services:
     image: mysql:8.0
     container_name: soccer-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: soccerstore
-      MYSQL_USER: socceruser
-      MYSQL_PASSWORD: soccerpass
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-soccerstore}
+      MYSQL_USER: ${MYSQL_USER:-socceruser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-soccerpass}
     ports:
       - "3307:3306"
     volumes:
@@ -18,11 +18,16 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/soccerstore
-      SPRING_DATASOURCE_USERNAME: socceruser
-      SPRING_DATASOURCE_PASSWORD: soccerpass
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:mysql://mysql:3306/soccerstore}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-socceruser}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-soccerpass}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@husoccer.com}
     depends_on:
       - mysql
+    env_file:
+      - .env
 
 volumes:
   mysql-data:
