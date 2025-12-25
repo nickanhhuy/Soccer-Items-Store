@@ -38,5 +38,17 @@ build/
 *.key
 secrets/
 
+### Deployment Scripts - Keep Local Only ###
+deploy*.sh
+deploy*.cmd
+*deploy*.sh
+*deploy*.cmd
+ec2-setup.sh
+EC2-DEPLOYMENT.md
+auto-deploy.*
+fresh-deploy.*
+redeploy.*
+check-status.*
+
 ### Docker ###
 .dockerignore
