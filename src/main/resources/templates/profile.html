@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - HuSoccer Shop</title>
+    <link rel="stylesheet" th:href="@{/css/profile.css}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚽ My Profile</h1>
+            <a th:href="@{/menu}" class="back-btn">← Back to Shop</a>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div th:if="${successMessage}" class="alert alert-success">
+            <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-error">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <div class="profile-container">
+            <!-- Avatar Section -->
+            <div class="avatar-section">
+                <div class="avatar-wrapper">
+                    <img th:src="${user.avatarUrl != null ? user.avatarUrl : '/static/image/default-avatar.png'}" 
+                         alt="Profile Avatar" class="avatar-img">
+                </div>
+                <form th:action="@{/profile/upload-avatar}" method="post" enctype="multipart/form-data" class="avatar-form">
+                    <input type="file" name="avatar" id="avatar" accept="image/*" required>
+                    <button type="submit" class="btn btn-primary">Upload New Avatar</button>
+                </form>
+                <p class="avatar-hint">Max size: 5MB. Formats: JPG, PNG, GIF</p>
+            </div>
+
+            <!-- Profile Information -->
+            <div class="info-section">
+                <h2>Profile Information</h2>
+                <form th:action="@{/profile/update}" method="post">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" th:value="${user.userName}" disabled class="form-control">
+                        <small>Username cannot be changed</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" 
+                               th:value="${user.fullName}" 
+                               placeholder="Enter your full name" 
+                               class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" 
+                               th:value="${user.email}" 
+                               placeholder="your.email@example.com" 
+                               required class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" 
+                               th:value="${user.phone}" 
+                               placeholder="+1 (555) 123-4567" 
+                               class="form-control">
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Update Profile</button>
+                </form>
+            </div>
+
+            <!-- Change Password Section -->
+            <div class="password-section">
+                <h2>Change Password</h2>
+                <form th:action="@{/profile/change-password}" method="post">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" name="currentPassword" 
+                               placeholder="Enter current password" 
+                               required class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" name="newPassword" 
+                               placeholder="Enter new password (min 6 characters)" 
+                               required minlength="6" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" 
+                               placeholder="Confirm new password" 
+                               required minlength="6" class="form-control">
+                    </div>
+
+                    <button type="submit" class="btn btn-warning">Change Password</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => alert.style.display = 'none');
+        }, 5000);
+
+        // Password confirmation validation
+        document.querySelector('.password-section form').addEventListener('submit', function(e) {
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+            
+            if (newPass !== confirmPass) {
+                e.preventDefault();
+                alert('New passwords do not match!');
+            }
+        });
+    </script>
+</body>
+</html>

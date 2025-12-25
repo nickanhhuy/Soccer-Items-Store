@@ -30,6 +30,15 @@ public class User {
     @Pattern(regexp = "^(USER|ADMIN)$", message = "Role must be either USER or ADMIN")
     private String role;
 
+    @Column(length = 500)
+    private String avatarUrl;
+
+    @Column(length = 100)
+    private String fullName;
+
+    @Column(length = 20)
+    private String phone;
+
     public User() {}
     public User(String userName, String password, String email, String role) {
         this.userName = userName;
@@ -76,5 +85,29 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

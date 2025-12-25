@@ -1,6 +1,7 @@
 package com.example.socceritemsstore.service;
 
 import com.example.socceritemsstore.exception.DuplicateResourceException;
+import com.example.socceritemsstore.exception.InvalidRequestException;
 import com.example.socceritemsstore.exception.ResourceNotFoundException;
 import com.example.socceritemsstore.model.User;
 import com.example.socceritemsstore.repository.UserRepo;
@@ -99,5 +100,38 @@ public class UserService {
     
     public boolean existsByEmail(String email) {
         return userRepo.findByEmail(email).isPresent();
+    }
+    
+    public void updateProfile(String username, String fullName, String phone, String email) {
+        User user = getUserByUsername(username);
+        
+        // Check if email is being changed and if it's already taken by another user
+        if (!user.getEmail().equals(email) && existsByEmail(email)) {
+            throw new DuplicateResourceException("User", "email", email);
+        }
+        
+        user.setFullName(fullName);
+        user.setPhone(phone);
+        user.setEmail(email);
+        userRepo.save(user);
+    }
+    
+    public void changePassword(String username, String currentPassword, String newPassword) {
+        User user = getUserByUsername(username);
+        
+        // Verify current password
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new InvalidRequestException("Current password is incorrect");
+        }
+        
+        // Update to new password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
+    }
+    
+    public void updateAvatar(String username, String avatarUrl) {
+        User user = getUserByUsername(username);
+        user.setAvatarUrl(avatarUrl);
+        userRepo.save(user);
     }
 }

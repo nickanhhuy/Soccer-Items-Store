@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - HuSoccer Shop</title>
+    <link rel="stylesheet" th:href="@{/css/analytics.css}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Analytics Dashboard</h1>
+            <div class="header-actions">
+                <a th:href="@{/admin}" class="btn btn-secondary">← Back to Admin</a>
+                <a th:href="@{/menu}" class="btn btn-primary">Go to Shop</a>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card revenue">
+                <div class="stat-icon">💰</div>
+                <div class="stat-content">
+                    <h3>Total Revenue</h3>
+                    <p class="stat-value">$<span th:text="${#numbers.formatDecimal(stats.totalRevenue, 1, 2)}">0.00</span></p>
+                </div>
+            </div>
+
+            <div class="stat-card orders">
+                <div class="stat-icon">📦</div>
+                <div class="stat-content">
+                    <h3>Total Orders</h3>
+                    <p class="stat-value" th:text="${stats.totalOrders}">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card users">
+                <div class="stat-icon">👥</div>
+                <div class="stat-content">
+                    <h3>Total Users</h3>
+                    <p class="stat-value" th:text="${stats.totalUsers}">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card items">
+                <div class="stat-icon">⚽</div>
+                <div class="stat-content">
+                    <h3>Total Items</h3>
+                    <p class="stat-value" th:text="${stats.totalItems}">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today & Month Stats -->
+        <div class="period-stats">
+            <div class="period-card">
+                <h3>📅 Today's Performance</h3>
+                <div class="period-details">
+                    <div class="period-item">
+                        <span>Orders:</span>
+                        <strong th:text="${stats.todayOrders}">0</strong>
+                    </div>
+                    <div class="period-item">
+                        <span>Revenue:</span>
+                        <strong>$<span th:text="${#numbers.formatDecimal(stats.todayRevenue, 1, 2)}">0.00</span></strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="period-card">
+                <h3>📆 This Month</h3>
+                <div class="period-details">
+                    <div class="period-item">
+                        <span>Orders:</span>
+                        <strong th:text="${stats.monthOrders}">0</strong>
+                    </div>
+                    <div class="period-item">
+                        <span>Revenue:</span>
+                        <strong>$<span th:text="${#numbers.formatDecimal(stats.monthRevenue, 1, 2)}">0.00</span></strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="period-card">
+                <h3>💵 Average Order Value</h3>
+                <div class="period-details">
+                    <div class="period-item">
+                        <span>Per Order:</span>
+                        <strong>$<span th:text="${#numbers.formatDecimal(stats.avgOrderValue, 1, 2)}">0.00</span></strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <!-- Revenue by Month Chart -->
+            <div class="chart-card">
+                <h3>📈 Revenue by Month</h3>
+                <div class="chart-container">
+                    <div th:if="${revenueByMonth.isEmpty()}" class="no-data">
+                        No revenue data available yet
+                    </div>
+                    <div th:unless="${revenueByMonth.isEmpty()}" class="bar-chart">
+                        <div th:each="entry : ${revenueByMonth}" class="bar-item">
+                            <div class="bar-label" th:text="${entry.key}">Month</div>
+                            <div class="bar-wrapper">
+                                <div class="bar" 
+                                     th:style="'width: ' + ${entry.value / stats.totalRevenue * 100} + '%'">
+                                </div>
+                                <span class="bar-value">$<span th:text="${#numbers.formatDecimal(entry.value, 1, 2)}">0</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Customers -->
+            <div class="chart-card">
+                <h3>🏆 Top Customers</h3>
+                <div class="top-list">
+                    <div th:if="${topCustomers.isEmpty()}" class="no-data">
+                        No customer data available yet
+                    </div>
+                    <div th:unless="${topCustomers.isEmpty()}">
+                        <div th:each="customer, iterStat : ${topCustomers}" class="top-item">
+                            <span class="rank" th:text="${iterStat.index + 1}">1</span>
+                            <span class="customer-name" th:text="${customer.key}">Customer</span>
+                            <span class="customer-orders" th:text="${customer.value} + ' orders'">0 orders</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders Table -->
+        <div class="table-card">
+            <h3>🕒 Recent Orders</h3>
+            <div th:if="${recentOrders.isEmpty()}" class="no-data">
+                No orders yet
+            </div>
+            <table th:unless="${recentOrders.isEmpty()}">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Payment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="order : ${recentOrders}">
+                        <td>#<span th:text="${order.id}">1</span></td>
+                        <td th:text="${order.username}">User</td>
+                        <td th:text="${#temporals.format(order.orderDate, 'MMM dd, yyyy HH:mm')}">Date</td>
+                        <td th:text="${order.orderItems.size()} + ' items'">0 items</td>
+                        <td class="amount">$<span th:text="${#numbers.formatDecimal(order.totalAmount, 1, 2)}">0.00</span></td>
+                        <td><span class="payment-badge" th:text="${order.paymentMethod}">Cash</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

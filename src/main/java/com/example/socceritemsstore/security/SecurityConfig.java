@@ -27,7 +27,9 @@ public class SecurityConfig {
                     .requestMatchers("/register", "/login").permitAll()
                     .requestMatchers("/test-email*", "/test-email-form*").permitAll() // Allow email testing
                     .requestMatchers("/admin").hasRole("ADMIN") // admin page access: adding, updating or delete items
+                    .requestMatchers("/analytics", "/analytics/**").hasRole("ADMIN") // Analytics dashboard for admin only
                     .requestMatchers("/order", "/receipt", "/history", "/checkout").hasAnyRole("USER", "ADMIN")//authorized users can access to those pages
+                    .requestMatchers("/profile", "/profile/**").hasAnyRole("USER", "ADMIN") // Profile management
                     .anyRequest().authenticated(); // All other requests require authentication
         }).formLogin(form -> form
                 .loginPage("/login")
