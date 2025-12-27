@@ -42,7 +42,13 @@ public class MainController {
     @Autowired
     private UserService userService;
 
-    // Menu page
+    // Root path - redirect to menu
+    @GetMapping("/")
+    public String home() {
+        return "redirect:/menu";
+    }
+
+    // Menu page - public access
     @GetMapping("/menu")
     public String menu(Model model, Authentication authentication, HttpSession session) {
         if (authentication != null && authentication.isAuthenticated()) {

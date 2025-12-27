@@ -23,7 +23,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(authorize -> {
-            authorize.requestMatchers("/css/**", "/js/**", "/static/image/**").permitAll()
+            authorize.requestMatchers("/css/**", "/js/**", "/static/image/**", "/image/**").permitAll()
+                    .requestMatchers("/", "/menu").permitAll() // Allow public access to home and menu
                     .requestMatchers("/register", "/login").permitAll()
                     .requestMatchers("/test-email*", "/test-email-form*").permitAll() // Allow email testing
                     .requestMatchers("/admin", "/admin/**").hasRole("ADMIN") // admin page access: adding, updating or delete items
@@ -40,7 +41,7 @@ public class SecurityConfig {
                 .permitAll()
         ).logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout")
+                .logoutSuccessUrl("/menu")  // After logout, redirect to menu instead of login
                 .permitAll()
         );
         return http.build();
