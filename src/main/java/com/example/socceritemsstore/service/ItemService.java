@@ -1,6 +1,5 @@
 package com.example.socceritemsstore.service;
 
-import com.example.socceritemsstore.exception.InvalidRequestException;
 import com.example.socceritemsstore.exception.ResourceNotFoundException;
 import com.example.socceritemsstore.model.Item;
 import com.example.socceritemsstore.repository.ItemRepo;
@@ -28,7 +27,7 @@ public class ItemService {
     
     public Item updateItem(Long id, Item item) {
         Item existing = itemRepo.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Item", "id", id));
+            .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + id));
         
         validateItem(item);
         
@@ -48,12 +47,12 @@ public class ItemService {
     
     public Item getItem(Long id) {
         return itemRepo.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Item", "id", id));
+            .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + id));
     }
 
     public void deleteItem(Long id) {
         if (!itemRepo.existsById(id)) {
-            throw new ResourceNotFoundException("Item", "id", id);
+            throw new ResourceNotFoundException("Item not found with id: " + id);
         }
         itemRepo.deleteById(id);
     }
@@ -63,7 +62,7 @@ public class ItemService {
         int newQuantity = item.getQuantity() - quantity;
         
         if (newQuantity < 0) {
-            throw new InvalidRequestException("Insufficient stock for item: " + item.getName());
+            throw new RuntimeException("Insufficient stock for item: " + item.getName());
         }
         
         item.setQuantity(newQuantity);
@@ -72,16 +71,16 @@ public class ItemService {
     
     private void validateItem(Item item) {
         if (item == null) {
-            throw new InvalidRequestException("Item cannot be null");
+            throw new RuntimeException("Item cannot be null");
         }
         if (item.getName() == null || item.getName().trim().isEmpty()) {
-            throw new InvalidRequestException("Item name is required");
+            throw new RuntimeException("Item name is required");
         }
         if (item.getPrice() == null || item.getPrice() < 0.01 || item.getPrice() > 9999.99) {
-            throw new InvalidRequestException("Invalid price. Must be between 0.01 and 9999.99");
+            throw new RuntimeException("Invalid price. Must be between 0.01 and 9999.99");
         }
         if (item.getQuantity() == null || item.getQuantity() < 0 || item.getQuantity() > 9999) {
-            throw new InvalidRequestException("Invalid quantity. Must be between 0 and 9999");
+            throw new RuntimeException("Invalid quantity. Must be between 0 and 9999");
         }
     }
 }

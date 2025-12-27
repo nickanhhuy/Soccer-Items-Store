@@ -21,7 +21,6 @@ public class Order {
     
     @NotBlank(message = "Full name is required")
     @Size(min = 2, max = 100, message = "Full name must be between 2 and 100 characters")
-    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Full name can only contain letters and spaces")
     @Column(nullable = false)
     private String fullName;
     
@@ -32,29 +31,25 @@ public class Order {
     
     @NotBlank(message = "City is required")
     @Size(min = 2, max = 50, message = "City must be between 2 and 50 characters")
-    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "City can only contain letters and spaces")
     @Column(nullable = false)
     private String city;
     
     @NotBlank(message = "State is required")
     @Size(min = 2, max = 50, message = "State must be between 2 and 50 characters")
-    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "State can only contain letters and spaces")
     @Column(nullable = false)
     private String state;
     
     @NotBlank(message = "ZIP code is required")
-    @Pattern(regexp = "^\\d{5}(-\\d{4})?$", message = "ZIP code must be in format 12345 or 12345-6789")
+    @Size(min = 3, max = 20, message = "ZIP code must be between 3 and 20 characters")
     @Column(nullable = false)
     private String zipCode;
     
     @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Please provide a valid phone number")
+    @Size(min = 7, max = 20, message = "Phone number must be between 7 and 20 characters")
     @Column(nullable = false)
     private String phone;
     
     @NotBlank(message = "Payment method is required")
-    @Pattern(regexp = "^(Credit Card|Debit Card|PayPal|Cash on Delivery)$", 
-             message = "Payment method must be Credit Card, Debit Card, PayPal, or Cash on Delivery")
     @Column(nullable = false)
     private String paymentMethod;
     

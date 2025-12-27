@@ -9,9 +9,9 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 Analytics Dashboard</h1>
+            <h1>Analytics Dashboard</h1>
             <div class="header-actions">
-                <a th:href="@{/admin}" class="btn btn-secondary">← Back to Admin</a>
+                <a th:href="@{/admin}" class="btn btn-secondary">Back to Admin</a>
                 <a th:href="@{/menu}" class="btn btn-primary">Go to Shop</a>
             </div>
         </div>
@@ -19,7 +19,6 @@
         <!-- Stats Cards -->
         <div class="stats-grid">
             <div class="stat-card revenue">
-                <div class="stat-icon">💰</div>
                 <div class="stat-content">
                     <h3>Total Revenue</h3>
                     <p class="stat-value">$<span th:text="${#numbers.formatDecimal(stats.totalRevenue, 1, 2)}">0.00</span></p>
@@ -27,7 +26,6 @@
             </div>
 
             <div class="stat-card orders">
-                <div class="stat-icon">📦</div>
                 <div class="stat-content">
                     <h3>Total Orders</h3>
                     <p class="stat-value" th:text="${stats.totalOrders}">0</p>
@@ -35,7 +33,6 @@
             </div>
 
             <div class="stat-card users">
-                <div class="stat-icon">👥</div>
                 <div class="stat-content">
                     <h3>Total Users</h3>
                     <p class="stat-value" th:text="${stats.totalUsers}">0</p>
@@ -43,7 +40,6 @@
             </div>
 
             <div class="stat-card items">
-                <div class="stat-icon">⚽</div>
                 <div class="stat-content">
                     <h3>Total Items</h3>
                     <p class="stat-value" th:text="${stats.totalItems}">0</p>
@@ -54,38 +50,38 @@
         <!-- Today & Month Stats -->
         <div class="period-stats">
             <div class="period-card">
-                <h3>📅 Today's Performance</h3>
+                <h3>Today's Performance</h3>
                 <div class="period-details">
                     <div class="period-item">
-                        <span>Orders:</span>
+                        <span>Orders</span>
                         <strong th:text="${stats.todayOrders}">0</strong>
                     </div>
                     <div class="period-item">
-                        <span>Revenue:</span>
+                        <span>Revenue</span>
                         <strong>$<span th:text="${#numbers.formatDecimal(stats.todayRevenue, 1, 2)}">0.00</span></strong>
                     </div>
                 </div>
             </div>
 
             <div class="period-card">
-                <h3>📆 This Month</h3>
+                <h3>This Month</h3>
                 <div class="period-details">
                     <div class="period-item">
-                        <span>Orders:</span>
+                        <span>Orders</span>
                         <strong th:text="${stats.monthOrders}">0</strong>
                     </div>
                     <div class="period-item">
-                        <span>Revenue:</span>
+                        <span>Revenue</span>
                         <strong>$<span th:text="${#numbers.formatDecimal(stats.monthRevenue, 1, 2)}">0.00</span></strong>
                     </div>
                 </div>
             </div>
 
             <div class="period-card">
-                <h3>💵 Average Order Value</h3>
+                <h3>Average Order Value</h3>
                 <div class="period-details">
                     <div class="period-item">
-                        <span>Per Order:</span>
+                        <span>Per Order</span>
                         <strong>$<span th:text="${#numbers.formatDecimal(stats.avgOrderValue, 1, 2)}">0.00</span></strong>
                     </div>
                 </div>
@@ -96,7 +92,7 @@
         <div class="charts-section">
             <!-- Revenue by Month Chart -->
             <div class="chart-card">
-                <h3>📈 Revenue by Month</h3>
+                <h3>Revenue by Month</h3>
                 <div class="chart-container">
                     <div th:if="${revenueByMonth.isEmpty()}" class="no-data">
                         No revenue data available yet
@@ -117,7 +113,7 @@
 
             <!-- Top Customers -->
             <div class="chart-card">
-                <h3>🏆 Top Customers</h3>
+                <h3>Top Customers</h3>
                 <div class="top-list">
                     <div th:if="${topCustomers.isEmpty()}" class="no-data">
                         No customer data available yet
@@ -135,7 +131,7 @@
 
         <!-- Recent Orders Table -->
         <div class="table-card">
-            <h3>🕒 Recent Orders</h3>
+            <h3>Recent Orders</h3>
             <div th:if="${recentOrders.isEmpty()}" class="no-data">
                 No orders yet
             </div>

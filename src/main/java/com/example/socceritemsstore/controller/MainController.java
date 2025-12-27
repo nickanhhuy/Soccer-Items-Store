@@ -108,9 +108,7 @@ public class MainController {
     }
     
     @PostMapping("/checkout")
-    public String processCheckout(@Valid @ModelAttribute("order") Order order,
-                                   BindingResult bindingResult,
-                                   @RequestParam String fullName,
+    public String processCheckout(@RequestParam String fullName,
                                    @RequestParam String address,
                                    @RequestParam String city,
                                    @RequestParam String state,
@@ -128,37 +126,34 @@ public class MainController {
             model.addAttribute("username", username);
         }
         
-        // Validate order data
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("errorMessage", "Please correct the errors in the form");
-            return "checkout";
-        }
-        
         try {
+            // Get cart items from session
+            List<Item> cartItems = (List<Item>) session.getAttribute("orders");
+            if (cartItems == null || cartItems.isEmpty()) {
+                model.addAttribute("errorMessage", "Your cart is empty");
+                return "order";
+            }
+            
             // Create and save order to database
             Order newOrder = new Order(username, fullName, address, city, state, zipCode, phone, paymentMethod, total);
             
-            // Get cart items from session
-            List<Item> cartItems = (List<Item>) session.getAttribute("orders");
-            if (cartItems != null && !cartItems.isEmpty()) {
-                for (Item item : cartItems) {
-                    OrderItem orderItem = new OrderItem(
-                        item.getName(),
-                        item.getCategory(),
-                        item.getSizes() != null && !item.getSizes().isEmpty() ? item.getSizes().get(0) : "N/A",
-                        item.getQuantity(),
-                        item.getPrice(),
-                        item.getImage()
-                    );
-                    newOrder.addOrderItem(orderItem);
-                }
-            } else {
-                model.addAttribute("errorMessage", "Your cart is empty");
-                return "checkout";
+            // Add cart items to order
+            for (Item item : cartItems) {
+                OrderItem orderItem = new OrderItem(
+                    item.getName(),
+                    item.getCategory(),
+                    item.getSizes() != null && !item.getSizes().isEmpty() ? item.getSizes().get(0) : "N/A",
+                    item.getQuantity(),
+                    item.getPrice(),
+                    item.getImage()
+                );
+                newOrder.addOrderItem(orderItem);
             }
             
             // Save order to database
-            orderService.saveOrder(newOrder);
+            System.out.println("DEBUG: Attempting to save order for user: " + username);
+            Order savedOrder = orderService.saveOrder(newOrder);
+            System.out.println("DEBUG: Order saved successfully with ID: " + savedOrder.getId());
             
             // Pass order details to checkout page
             model.addAttribute("fullName", fullName);
@@ -175,8 +170,20 @@ public class MainController {
             session.setAttribute("orders", new ArrayList<Item>());
             
         } catch (Exception e) {
+            System.err.println("ERROR: Failed to save order - " + e.getMessage());
+            e.printStackTrace();
             model.addAttribute("errorMessage", "Error processing order: " + e.getMessage());
-            return "checkout";
+            
+            // Return to order page with error
+            List<Item> cartItems = (List<Item>) session.getAttribute("orders");
+            if (cartItems != null) {
+                double cartTotal = cartItems.stream()
+                        .mapToDouble(i -> i.getPrice() * i.getQuantity())
+                        .sum();
+                model.addAttribute("items", cartItems);
+                model.addAttribute("total", cartTotal);
+            }
+            return "order";
         }
         
         return "checkout";

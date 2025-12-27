@@ -3,124 +3,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile - HuSoccer Shop</title>
+    <title>Settings - HuSoccer Shop</title>
     <link rel="stylesheet" th:href="@{/css/profile.css}">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>⚽ My Profile</h1>
-            <a th:href="@{/menu}" class="back-btn">← Back to Shop</a>
-        </div>
+    <!-- Success/Error Messages -->
+    <div th:if="${successMessage}" class="alert alert-success">
+        <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-error">
+        <span th:text="${errorMessage}"></span>
+    </div>
 
-        <!-- Success/Error Messages -->
-        <div th:if="${successMessage}" class="alert alert-success">
-            <span th:text="${successMessage}"></span>
-        </div>
-        <div th:if="${errorMessage}" class="alert alert-error">
-            <span th:text="${errorMessage}"></span>
-        </div>
-
-        <div class="profile-container">
-            <!-- Avatar Section -->
-            <div class="avatar-section">
-                <div class="avatar-wrapper">
-                    <img th:src="${user.avatarUrl != null ? user.avatarUrl : '/static/image/default-avatar.png'}" 
-                         alt="Profile Avatar" class="avatar-img">
-                </div>
-                <form th:action="@{/profile/upload-avatar}" method="post" enctype="multipart/form-data" class="avatar-form">
-                    <input type="file" name="avatar" id="avatar" accept="image/*" required>
-                    <button type="submit" class="btn btn-primary">Upload New Avatar</button>
-                </form>
-                <p class="avatar-hint">Max size: 5MB. Formats: JPG, PNG, GIF</p>
+    <div class="profile-container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Settings</h2>
             </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#edit-profile" class="nav-item active" onclick="showSection('edit-profile', event)">
+                    Edit profile
+                </a>
+                <a href="#change-password" class="nav-item" onclick="showSection('change-password', event)">
+                    Password and security
+                </a>
+                <a href="#update-avatar" class="nav-item" onclick="showSection('update-avatar', event)">
+                    Update avatar
+                </a>
+                <a href="#payment-method" class="nav-item" onclick="showSection('payment-method', event)">
+                    Payment method
+                </a>
+                <a href="#delete-account" class="nav-item" onclick="showSection('delete-account', event)">
+                    Delete account
+                </a>
+            </nav>
 
-            <!-- Profile Information -->
-            <div class="info-section">
-                <h2>Profile Information</h2>
-                <form th:action="@{/profile/update}" method="post">
-                    <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" th:value="${user.userName}" disabled class="form-control">
-                        <small>Username cannot be changed</small>
+            <div class="sidebar-footer">
+                <a th:href="@{/menu}" class="back-link">← Back to Shop</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Edit Profile Section -->
+            <section id="edit-profile" class="content-section active">
+                <h1 class="section-title">Edit profile</h1>
+                
+                <form th:action="@{/profile/update}" method="post" class="profile-form">
+                    <div class="form-row">
+                        <label class="form-label">Username</label>
+                        <input type="text" th:value="${user.userName}" disabled class="form-input disabled">
                     </div>
 
-                    <div class="form-group">
-                        <label for="fullName">Full Name</label>
+                    <div class="form-row">
+                        <label class="form-label" for="fullName">Name</label>
                         <input type="text" id="fullName" name="fullName" 
                                th:value="${user.fullName}" 
-                               placeholder="Enter your full name" 
-                               class="form-control">
+                               placeholder="Name" 
+                               class="form-input">
                     </div>
 
-                    <div class="form-group">
-                        <label for="email">Email</label>
+                    <div class="form-row">
+                        <label class="form-label" for="email">Email</label>
                         <input type="email" id="email" name="email" 
                                th:value="${user.email}" 
-                               placeholder="your.email@example.com" 
-                               required class="form-control">
+                               placeholder="Email" 
+                               required class="form-input">
                     </div>
 
-                    <div class="form-group">
-                        <label for="phone">Phone Number</label>
+                    <div class="form-row">
+                        <label class="form-label" for="phone">Phone</label>
                         <input type="tel" id="phone" name="phone" 
                                th:value="${user.phone}" 
-                               placeholder="+1 (555) 123-4567" 
-                               class="form-control">
+                               placeholder="Phone number" 
+                               class="form-input">
                     </div>
 
-                    <button type="submit" class="btn btn-success">Update Profile</button>
+                    <button type="submit" class="btn-submit">Submit</button>
                 </form>
-            </div>
+            </section>
 
             <!-- Change Password Section -->
-            <div class="password-section">
-                <h2>Change Password</h2>
-                <form th:action="@{/profile/change-password}" method="post">
-                    <div class="form-group">
-                        <label for="currentPassword">Current Password</label>
+            <section id="change-password" class="content-section">
+                <h1 class="section-title">Password and security</h1>
+                
+                <form th:action="@{/profile/change-password}" method="post" class="profile-form">
+                    <div class="form-row">
+                        <label class="form-label" for="currentPassword">Current password</label>
                         <input type="password" id="currentPassword" name="currentPassword" 
-                               placeholder="Enter current password" 
-                               required class="form-control">
+                               placeholder="Current password" 
+                               required class="form-input">
                     </div>
 
-                    <div class="form-group">
-                        <label for="newPassword">New Password</label>
+                    <div class="form-row">
+                        <label class="form-label" for="newPassword">New password</label>
                         <input type="password" id="newPassword" name="newPassword" 
-                               placeholder="Enter new password (min 6 characters)" 
-                               required minlength="6" class="form-control">
+                               placeholder="New password" 
+                               required minlength="6" class="form-input">
                     </div>
 
-                    <div class="form-group">
-                        <label for="confirmPassword">Confirm New Password</label>
+                    <div class="form-row">
+                        <label class="form-label" for="confirmPassword">Confirm new password</label>
                         <input type="password" id="confirmPassword" name="confirmPassword" 
                                placeholder="Confirm new password" 
-                               required minlength="6" class="form-control">
+                               required minlength="6" class="form-input">
                     </div>
 
-                    <button type="submit" class="btn btn-warning">Change Password</button>
+                    <button type="submit" class="btn-submit">Change password</button>
                 </form>
+            </section>
+
+            <!-- Update Avatar Section -->
+            <section id="update-avatar" class="content-section">
+                <h1 class="section-title">Avatar</h1>
+                
+                <div class="avatar-section">
+                    <div class="avatar-container">
+                        <img th:src="${user.avatarUrl != null ? user.avatarUrl : '/image/default-avatar.png'}" 
+                             alt="Avatar" class="avatar-img" id="avatarPreview">
+                    </div>
+
+                    <form th:action="@{/profile/upload-avatar}" method="post" enctype="multipart/form-data" id="avatarForm">
+                        <input type="file" name="avatar" id="avatar" accept="image/*" 
+                               style="display: none;" onchange="handleAvatarChange(event)">
+                        <button type="button" class="btn-update-avatar" onclick="document.getElementById('avatar').click()">
+                            Update your avatar
+                        </button>
+                    </form>
+
+                    <form th:action="@{/profile/delete-avatar}" method="post" style="margin-top: 15px;">
+                        <button type="submit" class="btn-delete-avatar">
+                            Delete avatar
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Payment Method Section -->
+            <section id="payment-method" class="content-section">
+                <h1 class="section-title">Payment method</h1>
+                
+                <p class="section-description">Manage your payment methods for faster checkout</p>
+                
+                <div class="payment-list">
+                    <div class="payment-item">
+                        <div class="payment-details">
+                            <p class="payment-type">Visa ending in 4242</p>
+                            <p class="payment-expiry">Expires 12/25</p>
+                        </div>
+                        <button class="btn-text-danger">Remove</button>
+                    </div>
+                </div>
+
+                <button class="btn-text" onclick="alert('Add payment method feature coming soon!')">
+                    Add payment method
+                </button>
+            </section>
+
+            <!-- Delete Account Section -->
+            <section id="delete-account" class="content-section">
+                <h1 class="section-title">Delete account</h1>
+                
+                <div class="warning-section">
+                    <p class="warning-title">Warning: This action cannot be undone</p>
+                    <p class="warning-text">Deleting your account will permanently remove all your data including:</p>
+                    <ul class="warning-list">
+                        <li>Profile information</li>
+                        <li>Order history</li>
+                        <li>Saved payment methods</li>
+                        <li>All personal data</li>
+                    </ul>
+                </div>
+
+                <button class="btn-danger" onclick="showDeleteConfirmation()">
+                    Delete my account
+                </button>
+            </section>
+        </main>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-box">
+            <h3 class="modal-title">Delete account?</h3>
+            <p class="modal-text">Are you sure you want to permanently delete your account?</p>
+            <div class="modal-buttons">
+                <form th:action="@{/profile/delete-account}" method="post" style="display: inline;">
+                    <button type="submit" class="btn-modal-danger">Delete</button>
+                </form>
+                <button class="btn-modal-cancel" onclick="hideDeleteConfirmation()">Cancel</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Auto-hide alerts after 5 seconds
+        function showSection(sectionId, event) {
+            event.preventDefault();
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function handleAvatarChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('avatarPreview').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+                document.getElementById('avatarForm').submit();
+            }
+        }
+
+        function showDeleteConfirmation() {
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        function hideDeleteConfirmation() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('deleteModal');
+            if (event.target === modal) hideDeleteConfirmation();
+        }
+
         setTimeout(() => {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => alert.style.display = 'none');
+            document.querySelectorAll('.alert').forEach(alert => alert.style.display = 'none');
         }, 5000);
 
-        // Password confirmation validation
-        document.querySelector('.password-section form').addEventListener('submit', function(e) {
-            const newPass = document.getElementById('newPassword').value;
-            const confirmPass = document.getElementById('confirmPassword').value;
-            
-            if (newPass !== confirmPass) {
-                e.preventDefault();
-                alert('New passwords do not match!');
-            }
-        });
+        const passwordForm = document.querySelector('#change-password form');
+        if (passwordForm) {
+            passwordForm.addEventListener('submit', function(e) {
+                const newPass = document.getElementById('newPassword').value;
+                const confirmPass = document.getElementById('confirmPassword').value;
+                if (newPass !== confirmPass) {
+                    e.preventDefault();
+                    alert('New passwords do not match!');
+                }
+            });
+        }
     </script>
 </body>
 </html>

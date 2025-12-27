@@ -1,46 +1,34 @@
 package com.example.socceritemsstore.exception;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+/**
+ * Simple global exception handler for the Soccer Items Store to handle common errors.
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
     
+    // Handle when something is not found (like item or user)
     @ExceptionHandler(ResourceNotFoundException.class)
-    public String handleResourceNotFoundException(ResourceNotFoundException ex, 
-                                                  RedirectAttributes redirectAttributes) {
+    public String handleNotFound(ResourceNotFoundException ex, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", ex.getMessage());
         return "redirect:/menu";
     }
     
-    @ExceptionHandler(InvalidRequestException.class)
-    public String handleInvalidRequestException(InvalidRequestException ex, 
-                                               RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("error", ex.getMessage());
-        return "redirect:/menu";
-    }
-    
+    // Handle when there's not enough stock
     @ExceptionHandler(InsufficientStockException.class)
-    public String handleInsufficientStockException(InsufficientStockException ex, 
-                                                   RedirectAttributes redirectAttributes) {
+    public String handleInsufficientStock(InsufficientStockException ex, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", ex.getMessage());
         return "redirect:/order";
     }
     
-    @ExceptionHandler(DuplicateResourceException.class)
-    public String handleDuplicateResourceException(DuplicateResourceException ex, 
-                                                   RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("error", ex.getMessage());
-        return "redirect:/register";
-    }
-    
+    // Handle all other unexpected errors
     @ExceptionHandler(Exception.class)
-    public String handleGenericException(Exception ex, Model model) {
-        model.addAttribute("error", "An unexpected error occurred: " + ex.getMessage());
-        model.addAttribute("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+    public String handleGenericError(Exception ex, Model model) {
+        model.addAttribute("error", "Something went wrong: " + ex.getMessage());
         return "error/500";
     }
 }

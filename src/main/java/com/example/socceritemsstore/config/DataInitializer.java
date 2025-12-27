@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
+// Seed data into database to get the initial products
 @Component
 public class DataInitializer implements CommandLineRunner {
 
@@ -28,11 +28,12 @@ public class DataInitializer implements CommandLineRunner {
         String adminPassword = System.getenv("ADMIN_PASSWORD");
         String adminEmail = System.getenv("ADMIN_EMAIL");
         
-        // Use defaults if environment variables are not set (for local development)
+        // Create an exception if admin credentials are lost => it will generate an admin account in default.
         if (adminUsername == null) adminUsername = "admin";
         if (adminPassword == null) adminPassword = "admin123";
         if (adminEmail == null) adminEmail = "admin@husoccer.com";
-        
+
+
         if (!userRepo.findByUserName(adminUsername).isPresent()) {
             User admin = new User();
             admin.setUserName(adminUsername);

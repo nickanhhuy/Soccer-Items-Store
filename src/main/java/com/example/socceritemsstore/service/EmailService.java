@@ -65,7 +65,7 @@ public class EmailService {
         
         html.append("<div class='container'>");
         html.append("<div class='header'>");
-        html.append("<h1>⚽ Order Confirmed!</h1>");
+        html.append("<h1> Order Confirmed!</h1>");
         html.append("<p>Thank you for your order at ").append(appName).append("</p>");
         html.append("</div>");
         
@@ -150,7 +150,7 @@ public class EmailService {
         
         html.append("<div class='container'>");
         html.append("<div class='header'>");
-        html.append("<h1>⚽ Welcome to ").append(appName).append("!</h1>");
+        html.append("<h1> Welcome to ").append(appName).append("!</h1>");
         html.append("</div>");
         
         html.append("<div class='content'>");

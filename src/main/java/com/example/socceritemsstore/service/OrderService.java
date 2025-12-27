@@ -1,6 +1,5 @@
 package com.example.socceritemsstore.service;
 
-import com.example.socceritemsstore.exception.InvalidRequestException;
 import com.example.socceritemsstore.exception.ResourceNotFoundException;
 import com.example.socceritemsstore.model.Order;
 import com.example.socceritemsstore.repository.OrderRepo;
@@ -51,7 +50,7 @@ public class OrderService {
     
     public List<Order> getOrdersByUsername(String username) {
         if (username == null || username.trim().isEmpty()) {
-            throw new InvalidRequestException("Username cannot be empty");
+            throw new RuntimeException("Username cannot be empty");
         }
         return orderRepo.findByUsername(username);
     }
@@ -62,21 +61,21 @@ public class OrderService {
     
     public Order getOrderById(Long id) {
         return orderRepo.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
+            .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
     }
     
     private void validateOrder(Order order) {
         if (order == null) {
-            throw new InvalidRequestException("Order cannot be null");
+            throw new RuntimeException("Order cannot be null");
         }
         if (order.getUsername() == null || order.getUsername().trim().isEmpty()) {
-            throw new InvalidRequestException("Username is required");
+            throw new RuntimeException("Username is required");
         }
         if (order.getTotalAmount() == null || order.getTotalAmount() <= 0) {
-            throw new InvalidRequestException("Invalid total amount");
+            throw new RuntimeException("Invalid total amount");
         }
         if (order.getOrderItems() == null || order.getOrderItems().isEmpty()) {
-            throw new InvalidRequestException("Order must contain at least one item");
+            throw new RuntimeException("Order must contain at least one item");
         }
     }
 }

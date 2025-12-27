@@ -3,6 +3,7 @@ package com.example.socceritemsstore.controller;
 import com.example.socceritemsstore.model.User;
 import com.example.socceritemsstore.service.S3Service;
 import com.example.socceritemsstore.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -94,7 +95,7 @@ public class ProfileController {
             
             // For now, store a placeholder URL
             // In production, you would upload to S3 and get the URL
-            String avatarUrl = "/static/image/avatars/" + user.getUser_id() + "_" + file.getOriginalFilename();
+            String avatarUrl = "/image/avatars/" + user.getUser_id() + "_" + file.getOriginalFilename();
             
             // TODO: Implement actual S3 upload when AWS is configured
             // String avatarUrl = s3Service.uploadFile(file, fileName);
@@ -107,5 +108,28 @@ public class ProfileController {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to upload avatar: " + e.getMessage());
         }
         return "redirect:/profile";
+    }
+    
+    @PostMapping("/delete-account")
+    public String deleteAccount(Authentication authentication, 
+                               HttpServletRequest request,
+                               RedirectAttributes redirectAttributes) {
+        try {
+            String username = authentication.getName();
+            
+            // Delete the user account
+            userService.deleteAccount(username);
+            
+            // Logout the user
+            request.getSession().invalidate();
+            
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Your account has been deleted successfully. We're sorry to see you go!");
+            return "redirect:/login";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Failed to delete account: " + e.getMessage());
+            return "redirect:/profile";
+        }
     }
 }

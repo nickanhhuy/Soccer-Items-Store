@@ -1,7 +1,5 @@
 package com.example.socceritemsstore.service;
 
-import com.example.socceritemsstore.exception.DuplicateResourceException;
-import com.example.socceritemsstore.exception.InvalidRequestException;
 import com.example.socceritemsstore.exception.ResourceNotFoundException;
 import com.example.socceritemsstore.model.User;
 import com.example.socceritemsstore.repository.UserRepo;
@@ -34,22 +32,21 @@ public class UserService {
     public void registration(String userName, String password, String email) throws IOException {
         // Check if username already exists
         if (userRepo.findByUserName(userName).isPresent()) {
-            throw new DuplicateResourceException("User", "username", userName);
+            throw new RuntimeException("Username already exists: " + userName);
         }
         
         // Check if email already exists
         if (userRepo.findByEmail(email).isPresent()) {
-            throw new DuplicateResourceException("User", "email", email);
+            throw new RuntimeException("Email already exists: " + email);
         }
-        
         User user = new User();
         user.setUserName(userName);
         user.setPassword(passwordEncoder.encode(password));
         user.setEmail(email);
         
-        // Assign ADMIN role to huynguyen, USER role to others
+        // Assign username "huynguyen" as an ADMIN role. Default role when the user registers is USER.
         if ("huynguyen".equalsIgnoreCase(userName)) {
-            user.setRole("ADMIN");
+            user.setRole("ADMIN"); // UPDATE admin role to huynguyen.
         } else {
             user.setRole("USER");
         }
@@ -82,12 +79,12 @@ public class UserService {
     
     public User getUserByUsername(String username) {
         return userRepo.findByUserName(username)
-            .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
     }
     
     public User getUserById(Long id) {
         return userRepo.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
     
     public List<User> getAllUsers() {
@@ -107,7 +104,7 @@ public class UserService {
         
         // Check if email is being changed and if it's already taken by another user
         if (!user.getEmail().equals(email) && existsByEmail(email)) {
-            throw new DuplicateResourceException("User", "email", email);
+            throw new RuntimeException("Email already exists: " + email);
         }
         
         user.setFullName(fullName);
@@ -121,17 +118,24 @@ public class UserService {
         
         // Verify current password
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            throw new InvalidRequestException("Current password is incorrect");
+            throw new RuntimeException("Current password is incorrect");
         }
         
         // Update to new password
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepo.save(user);
     }
-    
+
+    // Update the user avatar in profile management
     public void updateAvatar(String username, String avatarUrl) {
         User user = getUserByUsername(username);
         user.setAvatarUrl(avatarUrl);
         userRepo.save(user);
+    }
+
+    // Delete user account
+    public void deleteAccount(String username) {
+        User user = getUserByUsername(username);
+        userRepo.delete(user);
     }
 }

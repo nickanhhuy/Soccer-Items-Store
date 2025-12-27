@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Error - HuSoccer</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/error/error500.css}">
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code">500</div>
+        <h1 class="error-title">Oops! Something went wrong</h1>
+        <p class="error-message" th:text="${error}">An unexpected error occurred</p>
+        <a href="/menu" class="btn">Back to Shop</a>
+    </div>
+</body>
+</html>
