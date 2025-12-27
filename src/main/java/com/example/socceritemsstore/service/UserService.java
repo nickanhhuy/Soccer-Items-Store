@@ -1,5 +1,6 @@
 package com.example.socceritemsstore.service;
 
+import com.example.socceritemsstore.dto.UserBackupDTO;
 import com.example.socceritemsstore.exception.ResourceNotFoundException;
 import com.example.socceritemsstore.model.User;
 import com.example.socceritemsstore.repository.UserRepo;
@@ -53,15 +54,8 @@ public class UserService {
         
         User savedUser = userRepo.save(user);
         
-        // Try to upload to S3 (optional - don't fail if S3 not configured)
-        try {
-            String userJson = objectMapper.writeValueAsString(savedUser);
-            String fileName = "users/" + savedUser.getUser_id() + ".json";
-            s3Service.uploadStringAsFile(fileName, userJson);
-        } catch (Exception e) {
-            System.err.println("S3 upload failed (optional): " + e.getMessage());
-            // Continue - S3 is optional
-        }
+        // Backup user data to private S3 bucket
+        backupUserToS3(savedUser);
         
         // Send welcome email asynchronously after transaction commits
         sendWelcomeEmailAsync(email, userName);
@@ -137,5 +131,84 @@ public class UserService {
     public void deleteAccount(String username) {
         User user = getUserByUsername(username);
         userRepo.delete(user);
+    }
+    
+    // Admin: Update user role
+    public void updateUserRole(Long userId, String newRole) {
+        User user = getUserById(userId);
+        if (!newRole.equals("USER") && !newRole.equals("ADMIN")) {
+            throw new RuntimeException("Invalid role. Must be USER or ADMIN");
+        }
+        user.setRole(newRole);
+        userRepo.save(user);
+    }
+    
+    // Admin: Delete user by ID
+    public void deleteUserById(Long userId) {
+        User user = getUserById(userId);
+        userRepo.deleteById(userId);
+    }
+    
+    // Admin: Update user information
+    public void updateUser(Long userId, String fullName, String email, String phone, String role) {
+        User user = getUserById(userId);
+        
+        // Check if email is being changed and if it's already taken by another user
+        if (!user.getEmail().equals(email)) {
+            userRepo.findByEmail(email).ifPresent(existingUser -> {
+                if (!existingUser.getUser_id().equals(userId)) {
+                    throw new RuntimeException("Email already exists: " + email);
+                }
+            });
+        }
+        
+        user.setFullName(fullName);
+        user.setEmail(email);
+        user.setPhone(phone);
+        user.setRole(role);
+        User savedUser = userRepo.save(user);
+        
+        // Backup updated user data
+        backupUserToS3(savedUser);
+    }
+    
+    // Admin: Create new user
+    public void createUser(String userName, String password, String email, String fullName, String phone, String role) {
+        // Check if username already exists
+        if (userRepo.findByUserName(userName).isPresent()) {
+            throw new RuntimeException("Username already exists: " + userName);
+        }
+        
+        // Check if email already exists
+        if (userRepo.findByEmail(email).isPresent()) {
+            throw new RuntimeException("Email already exists: " + email);
+        }
+        
+        User user = new User();
+        user.setUserName(userName);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setEmail(email);
+        user.setFullName(fullName);
+        user.setPhone(phone);
+        user.setRole(role);
+        
+        User savedUser = userRepo.save(user);
+        
+        // Backup new user data
+        backupUserToS3(savedUser);
+    }
+    
+    // Backup user data to S3 (WITHOUT PASSWORD)
+    private void backupUserToS3(User user) {
+        try {
+            // Create DTO without password
+            UserBackupDTO backupData = new UserBackupDTO(user);
+            String userJson = objectMapper.writeValueAsString(backupData);
+            String fileName = "users/backup_" + user.getUser_id() + "_" + System.currentTimeMillis() + ".json";
+            s3Service.uploadBackup(fileName, userJson);
+        } catch (Exception e) {
+            System.err.println("S3 backup failed (optional): " + e.getMessage());
+            // Continue - S3 backup is optional
+        }
     }
 }

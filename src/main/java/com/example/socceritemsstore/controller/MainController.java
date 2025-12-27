@@ -38,6 +38,9 @@ public class MainController {
     
     @Autowired
     private UserRepo userRepo;
+    
+    @Autowired
+    private UserService userService;
 
     // Menu page
     @GetMapping("/menu")
@@ -244,6 +247,11 @@ public class MainController {
                 List<com.example.socceritemsstore.model.Order> allOrders = orderService.getAllOrders();
                 model.addAttribute("allOrders", allOrders);
                 
+                // Get all users for admin
+                List<User> allUsers = userService.getAllUsers();
+                model.addAttribute("allUsers", allUsers);
+                model.addAttribute("newUser", new User());
+                
                 return "admin";
             }
         }
@@ -297,8 +305,71 @@ public class MainController {
             model.addAttribute("item", item);
             model.addAttribute("items", itemService.getAllItems());
             model.addAttribute("allOrders", orderService.getAllOrders());
+            model.addAttribute("allUsers", userService.getAllUsers());
+            model.addAttribute("newUser", new User());
             model.addAttribute("editMode", true);
             return "admin";
+        }
+        return "redirect:/admin";
+    }
+    
+    // Admin: Create new user
+    @PostMapping("/admin/createUser")
+    public String createUser(@RequestParam String userName,
+                            @RequestParam String password,
+                            @RequestParam String email,
+                            @RequestParam(required = false) String fullName,
+                            @RequestParam(required = false) String phone,
+                            @RequestParam String role,
+                            RedirectAttributes redirectAttributes) {
+        try {
+            userService.createUser(userName, password, email, fullName, phone, role);
+            redirectAttributes.addFlashAttribute("successMessage", "User created successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error creating user: " + e.getMessage());
+        }
+        return "redirect:/admin";
+    }
+    
+    // Admin: Update user
+    @PostMapping("/admin/updateUser")
+    public String updateUser(@RequestParam Long userId,
+                            @RequestParam String fullName,
+                            @RequestParam String email,
+                            @RequestParam(required = false) String phone,
+                            @RequestParam String role,
+                            RedirectAttributes redirectAttributes) {
+        try {
+            userService.updateUser(userId, fullName, email, phone, role);
+            redirectAttributes.addFlashAttribute("successMessage", "User updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error updating user: " + e.getMessage());
+        }
+        return "redirect:/admin";
+    }
+    
+    // Admin: Delete user
+    @GetMapping("/admin/deleteUser/{id}")
+    public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            userService.deleteUserById(id);
+            redirectAttributes.addFlashAttribute("successMessage", "User deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error deleting user: " + e.getMessage());
+        }
+        return "redirect:/admin";
+    }
+    
+    // Admin: Toggle user role
+    @GetMapping("/admin/toggleRole/{id}")
+    public String toggleUserRole(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            User user = userService.getUserById(id);
+            String newRole = "ADMIN".equals(user.getRole()) ? "USER" : "ADMIN";
+            userService.updateUserRole(id, newRole);
+            redirectAttributes.addFlashAttribute("successMessage", "User role updated to " + newRole);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error updating role: " + e.getMessage());
         }
         return "redirect:/admin";
     }

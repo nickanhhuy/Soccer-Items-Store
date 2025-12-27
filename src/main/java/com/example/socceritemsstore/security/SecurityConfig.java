@@ -26,8 +26,9 @@ public class SecurityConfig {
             authorize.requestMatchers("/css/**", "/js/**", "/static/image/**").permitAll()
                     .requestMatchers("/register", "/login").permitAll()
                     .requestMatchers("/test-email*", "/test-email-form*").permitAll() // Allow email testing
-                    .requestMatchers("/admin").hasRole("ADMIN") // admin page access: adding, updating or delete items
+                    .requestMatchers("/admin", "/admin/**").hasRole("ADMIN") // admin page access: adding, updating or delete items
                     .requestMatchers("/analytics", "/analytics/**").hasRole("ADMIN") // Analytics dashboard for admin only
+                    .requestMatchers("/api/s3/**").hasRole("ADMIN") // S3 API endpoints - ADMIN ONLY
                     .requestMatchers("/order", "/receipt", "/history", "/checkout").hasAnyRole("USER", "ADMIN")//authorized users can access to those pages
                     .requestMatchers("/profile", "/profile/**").hasAnyRole("USER", "ADMIN") // Profile management
                     .anyRequest().authenticated(); // All other requests require authentication

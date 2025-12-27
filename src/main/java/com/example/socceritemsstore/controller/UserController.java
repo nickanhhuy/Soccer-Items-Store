@@ -36,12 +36,57 @@ public class UserController {
                            Model model,
                            RedirectAttributes redirectAttributes) {
         try {
+            // Validate username
+            if (userName == null || userName.trim().isEmpty()) {
+                throw new IllegalArgumentException("Username is required");
+            }
+            if (userName.length() < 3 || userName.length() > 20) {
+                throw new IllegalArgumentException("Username must be between 3 and 20 characters");
+            }
+            if (!userName.matches("^[a-zA-Z0-9_]+$")) {
+                throw new IllegalArgumentException("Username can only contain letters, numbers, and underscores");
+            }
+            
+            // Validate email
+            if (email == null || email.trim().isEmpty()) {
+                throw new IllegalArgumentException("Email is required");
+            }
+            if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+                throw new IllegalArgumentException("Please enter a valid email address (e.g., user@example.com)");
+            }
+            
+            // Validate password
+            if (password == null || password.isEmpty()) {
+                throw new IllegalArgumentException("Password is required");
+            }
+            if (password.length() < 6) {
+                throw new IllegalArgumentException("Password must be at least 6 characters long");
+            }
+            if (password.length() > 100) {
+                throw new IllegalArgumentException("Password must not exceed 100 characters");
+            }
+            
+            // Register user
             userService.registration(userName, password, email);
             redirectAttributes.addFlashAttribute("successMessage", "Registration successful! Please login.");
             return "redirect:/login?registered";
-        } catch (Exception e) {
-            // Handle all exceptions
+        } catch (IllegalArgumentException e) {
+            // Validation errors
             model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("userName", userName);
+            model.addAttribute("email", email);
+            return "register";
+        } catch (RuntimeException e) {
+            // Business logic errors (username/email exists)
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("userName", userName);
+            model.addAttribute("email", email);
+            return "register";
+        } catch (Exception e) {
+            // Unexpected errors
+            model.addAttribute("errorMessage", "Registration failed. Please try again later.");
+            model.addAttribute("userName", userName);
+            model.addAttribute("email", email);
             return "register";
         }
     }
