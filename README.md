@@ -1,6 +1,6 @@
 # HuSoccer Shop - Soccer Equipment E-commerce Platform
 
-![AWS Architecture](HuSoccerShop_AWS.drawio.png)
+![AWS Architecture](docs/HuSoccerShop_AWS.drawio.png)
 
 **Live Demo:** [https://husoccershop.store](https://husoccershop.store)
 
@@ -155,7 +155,7 @@ Create IAM role `SoccerShop-EC2-Role` with S3 access policy:
 
 Attach role to EC2 instance for automated S3 backups.
 
-**Detailed Guide:** [EC2-DEPLOYMENT.md](EC2-DEPLOYMENT.md)
+**Detailed Guide:** [EC2-DEPLOYMENT.md](docs/EC2-DEPLOYMENT.md)
 
 ---
 
