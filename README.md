@@ -1,10 +1,12 @@
 # HuSoccer Shop - Soccer Equipment E-commerce Platform
 
-![AWS Architecture](docs/HuSoccerShop_AWS.drawio.png)
+**Live Demo:** http://18.206.76.32:8080
 
-**Live Demo:** [https://husoccershop.store](https://husoccershop.store)
+## Architecture
 
-A full-stack e-commerce platform for soccer equipment built with Spring Boot and deployed on AWS with enterprise-grade security and scalability.
+![AWS Architecture](HuSoccerShop_AWS.png)
+
+A full-stack e-commerce platform for soccer equipment built with Spring Boot and deployed on AWS EC2 with Docker containerization.
 
 ---
 
@@ -54,39 +56,32 @@ HuSoccer Shop is a production-ready e-commerce application featuring user authen
 
 ---
 
-## Architecture
 
-### Application Architecture
+### Current Deployment Architecture
 
-The application follows a layered architecture pattern with clear separation of concerns:
+**Production Environment:**
+- **EC2 Instance**: `18.206.76.32` (t2.medium, Amazon Linux 2023)
+- **Containerized Services**: Docker Compose orchestration
+  - Spring Boot Application (Port 8080)
+  - MySQL 8.0 Database (Port 3307)
+- **Email Service**: Resend SMTP for transactional emails
+- **Storage**: AWS S3 for user data backups (optional)
 
-```
-Presentation Layer (Controllers, Templates)
-           ↓
-Business Layer (Services, DTOs, Validators)
-           ↓
-Data Layer (Repositories, Entities, MySQL)
-```
-
-### AWS Infrastructure
-
-- **EC2 Instances**: Auto-scaling group with t2.medium instances
-- **RDS MySQL**: Multi-AZ deployment with automated backups
-- **S3 Bucket**: Private bucket for encrypted user data backups
-- **Route 53**: DNS management for custom domain
-- **Application Load Balancer**: SSL termination and traffic distribution
-- **VPC**: Network isolation with public/private subnets
-- **CloudWatch**: Monitoring, logging, and alerting
-- **IAM Roles**: Secure service-to-service authentication
-
-### Container Architecture
-
+**Container Architecture:**
 ```
 Docker Host (EC2)
 ├── soccer-app (Spring Boot on port 8080)
-├── soccer-mysql (MySQL 8.0 on port 3306)
-└── Docker volumes (persistent data storage)
+│   └── Volumes: avatar-uploads
+├── soccer-mysql (MySQL 8.0 on port 3307)
+│   └── Volumes: mysql-data
+└── Docker Network: soccer-network (internal communication)
 ```
+
+**Data Flow:**
+1. User Request → EC2 Instance (Port 8080) → Spring Boot Application
+2. Application → MySQL Database (internal Docker network)
+3. Email Notifications → Resend SMTP Service
+4. User Data Backup → AWS S3 (encrypted, private bucket)
 
 ---
 
@@ -127,33 +122,45 @@ Password: admin123
 
 ### AWS EC2 Deployment
 
+**Current Production Setup:**
+- **Instance**: EC2 t2.medium (Amazon Linux 2023)
+- **Public IP**: 18.206.76.32
+- **Application URL**: http://18.206.76.32:8080
+
 ```bash
-# 1. Launch EC2 instance (t2.medium, Amazon Linux 2023)
-# 2. Install Docker and Docker Compose
-# 3. Clone repository and configure .env
+# 1. Connect to EC2
+ssh -i hu.pem ec2-user@18.206.76.32
+
+# 2. Clone repository
+git clone https://github.com/yourusername/Soccer-Items-Store.git
+cd Soccer-Items-Store/Soccer-Items-Store
+
+# 3. Configure environment
+nano .env
+# Update with your configuration (database, email, etc.)
+
 # 4. Build and start containers
 docker-compose up -d --build
 
-# 5. Setup SSL with Let's Encrypt
-sudo certbot --nginx -d husoccershop.store
+# 5. Verify deployment
+docker-compose ps
+docker-compose logs -f app
 ```
 
-### IAM Configuration
+**Security Group Configuration:**
+- Port 22 (SSH) - Your IP only
+- Port 8080 (HTTP) - 0.0.0.0/0 (public access)
+- Port 3307 (MySQL) - Optional, for direct DB access
 
-Create IAM role `SoccerShop-EC2-Role` with S3 access policy:
-
-```json
-{
-    "Version": "2012-10-17",
-    "Statement": [{
-        "Effect": "Allow",
-        "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject", "s3:ListBucket"],
-        "Resource": ["arn:aws:s3:::husoccer-shop/*", "arn:aws:s3:::husoccer-shop"]
-    }]
-}
+**Email Service Setup:**
+The application uses Resend for transactional emails. Configure in `.env`:
+```properties
+MAIL_HOST=smtp.resend.com
+MAIL_PORT=587
+MAIL_USERNAME=resend
+MAIL_PASSWORD=your-resend-api-key
+MAIL_FROM=noreply@yourdomain.com
 ```
-
-Attach role to EC2 instance for automated S3 backups.
 
 **Detailed Guide:** [EC2-DEPLOYMENT.md](docs/EC2-DEPLOYMENT.md)
 
@@ -267,9 +274,9 @@ docker stats
 ## Contact
 
 **Developer:** Huy Nguyen  
-**Email:** huynguyen@husoccer.com  
-**Website:** [https://husoccershop.store](https://husoccershop.store)
+**Email:** vuanhhuynguyen053004@gmail.com  
+**Live Application:** http://18.206.76.32:8080
 
 ---
 
-**Built with Spring Boot and deployed on AWS**
+**Built with Spring Boot and deployed on AWS EC2 with Docker**
