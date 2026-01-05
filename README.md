@@ -44,13 +44,29 @@ HuSoccer Shop is a production-ready e-commerce application featuring user authen
 
 ---
 
+## Screenshots
+
+### User Interface
+![Application UI](docs/UI.png)
+
+### Shopping Cart
+![Shopping Cart](docs/cart.png)
+
+### Admin Dashboard
+![Admin Panel](docs/admin.png)
+
+### Email Notifications
+![Email Verification](docs/emailNotify.png)
+
+---
+
 ## Technology Stack
 
 **Backend:** Java 17, Spring Boot 3.x, Spring Security, Spring Data JPA, MySQL 8.0, Maven
 
 **Frontend:** Thymeleaf, HTML5, CSS3, JavaScript
 
-**Infrastructure:** Docker, Docker Compose, AWS (EC2, S3, RDS, Route 53, IAM), Nginx, Let's Encrypt
+**Infrastructure:** Docker, Docker Compose, AWS (EC2, S3), Resend SMTP
 
 **Security:** BCrypt password hashing, CSRF protection, SSL/TLS encryption, IAM roles
 
@@ -82,6 +98,77 @@ Docker Host (EC2)
 2. Application → MySQL Database (internal Docker network)
 3. Email Notifications → Resend SMTP Service
 4. User Data Backup → AWS S3 (encrypted, private bucket)
+
+---
+
+## Environment Setup
+
+This application uses environment variables for sensitive configuration.
+
+### Local Development Setup
+
+1. Copy the `.env.example` file to `.env`:
+```bash
+cp .env.example .env
+```
+
+2. Update the `.env` file with your actual credentials:
+   - Database credentials
+   - Admin user credentials
+   - Email service credentials (Resend API)
+   - AWS credentials (optional)
+
+3. **Important**: Never commit the `.env` file to Git. It's already in `.gitignore`.
+
+### Environment Variables
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `SPRING_DATASOURCE_URL` | Database connection URL | `jdbc:mysql://mysql:3306/soccerstore` |
+| `SPRING_DATASOURCE_USERNAME` | Database username | `socceruser` |
+| `SPRING_DATASOURCE_PASSWORD` | Database password | `your_password` |
+| `SPRING_JPA_HIBERNATE_DDL_AUTO` | Hibernate DDL mode | `update` |
+| `ADMIN_USERNAME` | Admin account username | `huynguyen` |
+| `ADMIN_PASSWORD` | Admin account password | `your_admin_password` |
+| `ADMIN_EMAIL` | Admin email address | `admin@example.com` |
+| `MAIL_HOST` | SMTP server host | `smtp.resend.com` |
+| `MAIL_PORT` | SMTP server port | `587` |
+| `MAIL_USERNAME` | Email username | `resend` |
+| `MAIL_PASSWORD` | Email API key | `your_resend_api_key` |
+| `MAIL_FROM` | Sender email address | `noreply@yourdomain.com` |
+| `AWS_BUCKET_NAME` | S3 bucket name (optional) | `husoccer-shop` |
+| `AWS_REGION` | AWS region | `us-east-1` |
+| `SERVER_PORT` | Application port | `8080` |
+| `APP_BASE_URL` | Application base URL | `https://husoccershop.site` |
+
+### Running the Application
+
+**With Docker Compose (Recommended):**
+```bash
+docker-compose up -d --build
+```
+
+**Without Docker:**
+```bash
+./mvnw spring-boot:run
+```
+
+The application will automatically load environment variables from the `.env` file.
+
+### AWS EC2 Deployment
+
+For AWS EC2 deployment, set environment variables directly on your EC2 instance:
+
+1. SSH into your EC2 instance
+2. Clone the repository
+3. Create and configure the `.env` file
+4. Run with Docker Compose
+
+**Default Admin Credentials:**
+```
+Username: huynguyen
+Password: admin123
+```
 
 ---
 
