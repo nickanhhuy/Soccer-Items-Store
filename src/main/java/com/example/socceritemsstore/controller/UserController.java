@@ -2,6 +2,7 @@ package com.example.socceritemsstore.controller;
 
 import com.example.socceritemsstore.model.User;
 import com.example.socceritemsstore.service.UserService;
+import com.example.socceritemsstore.service.EmailService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ import java.io.IOException;
 public class UserController {
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private EmailService emailService;
     
     //Register Endpoint
     @GetMapping("/register")
@@ -68,7 +72,8 @@ public class UserController {
             
             // Register user
             userService.registration(userName, password, email);
-            redirectAttributes.addFlashAttribute("successMessage", "Registration successful! Please login.");
+            
+            redirectAttributes.addFlashAttribute("successMessage", "Registration successful! Please check your email to verify your account.");
             return "redirect:/login?registered";
         } catch (IllegalArgumentException e) {
             // Validation errors
@@ -88,6 +93,32 @@ public class UserController {
             model.addAttribute("userName", userName);
             model.addAttribute("email", email);
             return "register";
+        }
+    }
+    
+    // Email verification endpoint
+    @GetMapping("/verify-email")
+    public String verifyEmail(@RequestParam String token, Model model) {
+        try {
+            User user = userService.verifyEmailAndGetUser(token);
+            if (user != null) {
+                // Send welcome email after successful verification
+                try {
+                    emailService.sendWelcomeEmail(user.getEmail(), user.getUserName());
+                    System.out.println("Welcome email sent to: " + user.getEmail());
+                } catch (Exception e) {
+                    System.err.println("Failed to send welcome email: " + e.getMessage());
+                }
+                
+                model.addAttribute("username", user.getUserName());
+                return "email-verified";
+            } else {
+                model.addAttribute("error", true);
+                return "email-verified";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", true);
+            return "email-verified";
         }
     }
     

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Shopping Cart - HuSoccer</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/cart.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Main Header -->
+<header class="main-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="site-name">
+                <h1><a th:href="@{/menu}">HuSoccer</a></h1>
+            </div>
+            
+            <nav class="main-nav">
+                <a th:href="@{/menu}" class="nav-link">Shop</a>
+                <a th:href="@{/history}" class="nav-link">History</a>
+                <a th:href="@{/profile}" class="nav-link">Profile</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </nav>
+            
+            <div class="header-actions">
+                <a th:href="@{/cart}" class="cart-icon active">
+                    <span class="cart-text">Cart</span>
+                    <span class="cart-count" th:text="${cartItemCount}">0</span>
+                </a>
+                <div th:if="${username != null}" class="user-menu">
+                    <span class="welcome-text">Hi, <span th:text="${username}"></span></span>
+                    <form th:action="@{/logout}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-primary">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Alerts -->
+<div th:if="${successMessage}" class="alert alert-success">
+    <span th:text="${successMessage}"></span>
+</div>
+<div th:if="${errorMessage}" class="alert alert-error">
+    <span th:text="${errorMessage}"></span>
+</div>
+
+<!-- Cart Content -->
+<section class="cart-section">
+    <div class="container">
+        <div class="page-header">
+            <h1>Shopping Cart</h1>
+            <p th:if="${cart != null && !cart.cartItems.isEmpty()}">
+                You have <span th:text="${cartItemCount}">0</span> item(s) in your cart
+            </p>
+        </div>
+
+        <!-- Empty Cart State -->
+        <div th:if="${cart == null || cart.cartItems.isEmpty()}" class="empty-cart">
+            <div class="empty-cart-icon">🛒</div>
+            <h2>Your cart is empty</h2>
+            <p>Add some items to get started!</p>
+            <a th:href="@{/menu}" class="btn btn-primary">Continue Shopping</a>
+        </div>
+
+        <!-- Cart Items -->
+        <div th:if="${cart != null && !cart.cartItems.isEmpty()}" class="cart-content">
+            <div class="cart-items">
+                <div th:each="item : ${cart.cartItems}" class="cart-item">
+                    <div class="item-image">
+                        <img th:src="@{'/image/' + ${item.image}}" th:alt="${item.productName}">
+                    </div>
+                    
+                    <div class="item-details">
+                        <h3 class="item-name" th:text="${item.productName}">Product Name</h3>
+                        <div class="item-meta">
+                            <span class="item-category" th:text="${item.category}">Category</span>
+                            <span class="item-size">Size: <span th:text="${item.size}">M</span></span>
+                            <span th:if="${item.gender != null}" class="item-gender" th:text="${item.gender}">Unisex</span>
+                        </div>
+                        <div class="item-price">
+                            $<span th:text="${#numbers.formatDecimal(item.price, 1, 2)}">0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="item-quantity">
+                        <form th:action="@{'/cart/update/' + ${item.id}}" method="post" class="quantity-form">
+                            <button type="button" class="qty-btn" onclick="decreaseQty(this)">-</button>
+                            <input type="number" name="quantity" th:value="${item.quantity}" min="1" max="99" class="qty-input" readonly>
+                            <button type="button" class="qty-btn" onclick="increaseQty(this)">+</button>
+                            <button type="submit" class="btn-update">Update</button>
+                        </form>
+                    </div>
+                    
+                    <div class="item-subtotal">
+                        <div class="subtotal-label">Subtotal</div>
+                        <div class="subtotal-amount">
+                            $<span th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}">0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="item-remove">
+                        <form th:action="@{'/cart/remove/' + ${item.id}}" method="post">
+                            <button type="submit" class="btn-remove" title="Remove item">×</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="cart-summary">
+                <h2>Order Summary</h2>
+                
+                <div class="summary-row">
+                    <span>Subtotal (<span th:text="${cartItemCount}">0</span> items)</span>
+                    <span>$<span th:text="${#numbers.formatDecimal(cartTotal, 1, 2)}">0.00</span></span>
+                </div>
+                
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span th:if="${cartTotal >= 99}">FREE</span>
+                    <span th:if="${cartTotal < 99}">$9.99</span>
+                </div>
+                
+                <div class="summary-row shipping-note" th:if="${cartTotal < 99}">
+                    <small>Free shipping on orders over $99</small>
+                </div>
+                
+                <div class="summary-divider"></div>
+                
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span class="total-amount">
+                        $<span th:text="${#numbers.formatDecimal(cartTotal + (cartTotal >= 99 ? 0 : 9.99), 1, 2)}">0.00</span>
+                    </span>
+                </div>
+                
+                <div class="summary-actions">
+                    <a th:href="@{/checkout}" class="btn btn-primary btn-block">Proceed to Checkout</a>
+                    <a th:href="@{/menu}" class="btn btn-secondary btn-block">Continue Shopping</a>
+                    <form th:action="@{/cart/clear}" method="post" style="margin-top: 12px;">
+                        <button type="submit" class="btn-clear" onclick="return confirm('Are you sure you want to clear your cart?')">
+                            Clear Cart
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Quantity controls
+    function decreaseQty(btn) {
+        let input = btn.parentNode.querySelector(".qty-input");
+        if (parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    }
+
+    function increaseQty(btn) {
+        let input = btn.parentNode.querySelector(".qty-input");
+        if (parseInt(input.value) < 99) {
+            input.value = parseInt(input.value) + 1;
+        }
+    }
+
+    // Auto-hide alerts
+    setTimeout(function() {
+        document.querySelectorAll('.alert').forEach(function(alert) {
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 300);
+        });
+    }, 5000);
+</script>
+
+</body>
+</html>

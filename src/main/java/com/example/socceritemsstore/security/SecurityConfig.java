@@ -1,5 +1,6 @@
 package com.example.socceritemsstore.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,7 +14,9 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private UserDetailsService userDetailsService;
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
+    
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -26,6 +29,7 @@ public class SecurityConfig {
             authorize.requestMatchers("/css/**", "/js/**", "/static/image/**", "/image/**").permitAll()
                     .requestMatchers("/", "/menu").permitAll() // Allow public access to home and menu
                     .requestMatchers("/register", "/login").permitAll()
+                    .requestMatchers("/verify-email").permitAll() // Allow email verification without login
                     .requestMatchers("/test-email*", "/test-email-form*").permitAll() // Allow email testing
                     .requestMatchers("/admin", "/admin/**").hasRole("ADMIN") // admin page access: adding, updating or delete items
                     .requestMatchers("/analytics", "/analytics/**").hasRole("ADMIN") // Analytics dashboard for admin only
@@ -36,14 +40,16 @@ public class SecurityConfig {
         }).formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
+                .usernameParameter("email")  // Use email parameter instead of username
+                .passwordParameter("password")
                 .defaultSuccessUrl("/menu", true)  //if login successfully it will direct to menu page
-                .failureUrl("/login?failed")//failure cases
+                .failureUrl("/login?error")//failure cases
                 .permitAll()
         ).logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/menu")  // After logout, redirect to menu instead of login
                 .permitAll()
-        );
+        ).userDetailsService(customUserDetailsService);  // Use custom UserDetailsService
         return http.build();
     }
 }

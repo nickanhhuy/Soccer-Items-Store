@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+
 // Seed data into database to get the initial products
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -23,6 +26,9 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        // Migrate existing users: mark all as verified
+        migrateExistingUsers();
+        
         // Create admin user if it doesn't exist
         String adminUsername = System.getenv("ADMIN_USERNAME");
         String adminPassword = System.getenv("ADMIN_PASSWORD");
@@ -40,8 +46,19 @@ public class DataInitializer implements CommandLineRunner {
             admin.setPassword(passwordEncoder.encode(adminPassword));
             admin.setEmail(adminEmail);
             admin.setRole("ADMIN");
+            admin.setEmailVerified(true);  // Admin is auto-verified
             userRepo.save(admin);
             System.out.println("Admin user '" + adminUsername + "' created successfully");
+        } else {
+            // Update existing admin to be verified
+            final String finalAdminUsername = adminUsername;  // Make it effectively final for lambda
+            userRepo.findByUserName(adminUsername).ifPresent(admin -> {
+                if (!admin.isEmailVerified()) {
+                    admin.setEmailVerified(true);
+                    userRepo.save(admin);
+                    System.out.println("Admin user '" + finalAdminUsername + "' marked as verified");
+                }
+            });
         }
 
         // Add sample products if database is empty
@@ -86,6 +103,32 @@ public class DataInitializer implements CommandLineRunner {
             createItem("Predator Goalkeeper Gloves", "Others", 54.99, 55, "Unisex", "others/predatorGloves.jpg");
             
             System.out.println("Sample products added successfully!");
+        }
+    }
+    
+    // Migrate existing users to have emailVerified = true
+    private void migrateExistingUsers() {
+        try {
+            List<User> allUsers = userRepo.findAll();
+            int migratedCount = 0;
+            
+            for (User user : allUsers) {
+                // If user doesn't have emailVerified set (null or false), set it to true
+                if (!user.isEmailVerified()) {
+                    user.setEmailVerified(true);
+                    user.setVerificationToken(null);
+                    user.setTokenExpiryDate(null);
+                    userRepo.save(user);
+                    migratedCount++;
+                }
+            }
+            
+            if (migratedCount > 0) {
+                System.out.println("Migrated " + migratedCount + " existing users to verified status");
+            }
+        } catch (Exception e) {
+            System.err.println("Error migrating existing users: " + e.getMessage());
+            // Don't fail startup if migration fails
         }
     }
     

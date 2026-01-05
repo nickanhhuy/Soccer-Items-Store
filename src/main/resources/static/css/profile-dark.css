@@ -1,0 +1,86 @@
+/* Dark theme override for profile page - white background with black boxes */
+body {
+    background: #ffffff !important;
+    color: #1a1a1a !important;
+}
+
+/* Profile cards */
+.profile-card,
+.avatar-section,
+.info-section,
+.password-section,
+.danger-zone {
+    background: #0a0a0a !important;
+    border: 1px solid #262626 !important;
+}
+
+.profile-card h2,
+.section-title {
+    color: #ffffff !important;
+}
+
+/* Form elements */
+.form-group label {
+    color: #ffffff !important;
+}
+
+.form-group input {
+    background-color: #1a1a1a !important;
+    border-color: #262626 !important;
+    color: #ffffff !important;
+}
+
+.form-group input::placeholder {
+    color: #666 !important;
+}
+
+.form-group input:focus {
+    border-color: #4ade80 !important;
+}
+
+.form-group input:disabled {
+    background-color: #0a0a0a !important;
+    color: #666 !important;
+}
+
+/* Avatar section */
+.avatar-display {
+    background: #1a1a1a !important;
+    border-color: #262626 !important;
+}
+
+.avatar-placeholder {
+    background: #262626 !important;
+    color: #a8a8a8 !important;
+}
+
+.avatar-info p {
+    color: #a8a8a8 !important;
+}
+
+/* Info display */
+.info-display {
+    background: #1a1a1a !important;
+    border-color: #262626 !important;
+}
+
+.info-label {
+    color: #a8a8a8 !important;
+}
+
+.info-value {
+    color: #ffffff !important;
+}
+
+/* Danger zone */
+.danger-zone {
+    border-color: #ef4444 !important;
+}
+
+.danger-zone h3 {
+    color: #ef4444 !important;
+}
+
+.danger-zone p {
+    color: #a8a8a8 !important;
+}

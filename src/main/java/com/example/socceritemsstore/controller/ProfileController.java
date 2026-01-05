@@ -1,6 +1,8 @@
 package com.example.socceritemsstore.controller;
 
+import com.example.socceritemsstore.model.PaymentMethod;
 import com.example.socceritemsstore.model.User;
+import com.example.socceritemsstore.service.PaymentMethodService;
 import com.example.socceritemsstore.service.S3Service;
 import com.example.socceritemsstore.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +19,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Controller
 @RequestMapping("/profile")
@@ -28,14 +31,20 @@ public class ProfileController {
     @Autowired
     private S3Service s3Service;
     
+    @Autowired
+    private PaymentMethodService paymentMethodService;
+    
     @Value("${upload.path:uploads/avatars}")
     private String uploadPath;
     
     @GetMapping
     public String viewProfile(Authentication authentication, Model model) {
-        String username = authentication.getName();
-        User user = userService.getUserByUsername(username);
+        String email = authentication.getName();  // Now returns email
+        User user = userService.getUserByEmail(email);
+        List<PaymentMethod> paymentMethods = paymentMethodService.getUserPaymentMethods(user);
+        
         model.addAttribute("user", user);
+        model.addAttribute("paymentMethods", paymentMethods);
         return "profile";
     }
     
@@ -46,8 +55,9 @@ public class ProfileController {
                                Authentication authentication,
                                RedirectAttributes redirectAttributes) {
         try {
-            String username = authentication.getName();
-            userService.updateProfile(username, fullName, phone, email);
+            String currentEmail = authentication.getName();  // Now returns email
+            User user = userService.getUserByEmail(currentEmail);
+            userService.updateProfile(user.getUserName(), fullName, phone, email);
             redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
@@ -70,8 +80,9 @@ public class ProfileController {
                 throw new IllegalArgumentException("Password must be at least 6 characters");
             }
             
-            String username = authentication.getName();
-            userService.changePassword(username, currentPassword, newPassword);
+            String email = authentication.getName();  // Now returns email
+            User user = userService.getUserByEmail(email);
+            userService.changePassword(user.getUserName(), currentPassword, newPassword);
             redirectAttributes.addFlashAttribute("successMessage", "Password changed successfully!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
@@ -99,8 +110,8 @@ public class ProfileController {
                 throw new IllegalArgumentException("File size must be less than 5MB");
             }
             
-            String username = authentication.getName();
-            User user = userService.getUserByUsername(username);
+            String email = authentication.getName();  // Now returns email
+            User user = userService.getUserByEmail(email);
             
             // Create upload directory if it doesn't exist
             Path uploadDir = Paths.get(uploadPath);
@@ -122,7 +133,7 @@ public class ProfileController {
             
             // Update user avatar URL (relative path for web access)
             String avatarUrl = "/uploads/avatars/" + fileName;
-            userService.updateAvatar(username, avatarUrl);
+            userService.updateAvatar(user.getUserName(), avatarUrl);
             
             redirectAttributes.addFlashAttribute("successMessage", "Avatar uploaded successfully!");
         } catch (Exception e) {
@@ -135,8 +146,8 @@ public class ProfileController {
     public String deleteAvatar(Authentication authentication,
                               RedirectAttributes redirectAttributes) {
         try {
-            String username = authentication.getName();
-            User user = userService.getUserByUsername(username);
+            String email = authentication.getName();  // Now returns email
+            User user = userService.getUserByEmail(email);
             
             // Delete the physical file if it exists
             if (user.getAvatarUrl() != null && user.getAvatarUrl().startsWith("/uploads/avatars/")) {
@@ -146,7 +157,7 @@ public class ProfileController {
             }
             
             // Update user avatar URL to null
-            userService.updateAvatar(username, null);
+            userService.updateAvatar(user.getUserName(), null);
             
             redirectAttributes.addFlashAttribute("successMessage", "Avatar deleted successfully!");
         } catch (Exception e) {
@@ -160,10 +171,11 @@ public class ProfileController {
                                HttpServletRequest request,
                                RedirectAttributes redirectAttributes) {
         try {
-            String username = authentication.getName();
+            String email = authentication.getName();  // Now returns email
+            User user = userService.getUserByEmail(email);
             
             // Delete the user account
-            userService.deleteAccount(username);
+            userService.deleteAccount(user.getUserName());
             
             // Logout the user
             request.getSession().invalidate();
@@ -176,5 +188,61 @@ public class ProfileController {
                 "Failed to delete account: " + e.getMessage());
             return "redirect:/profile";
         }
+    }
+    
+    @PostMapping("/add-payment-method")
+    public String addPaymentMethod(@RequestParam String cardHolderName,
+                                  @RequestParam String cardNumber,
+                                  @RequestParam String expiryMonth,
+                                  @RequestParam String expiryYear,
+                                  @RequestParam String cvv,
+                                  @RequestParam(required = false) String cardType,
+                                  @RequestParam(defaultValue = "false") boolean setAsDefault,
+                                  Authentication authentication,
+                                  RedirectAttributes redirectAttributes) {
+        try {
+            String email = authentication.getName();
+            User user = userService.getUserByEmail(email);
+            
+            paymentMethodService.addPaymentMethod(user, cardHolderName, cardNumber, 
+                                                expiryMonth, expiryYear, cvv, cardType, setAsDefault);
+            
+            redirectAttributes.addFlashAttribute("successMessage", "Payment method added successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/profile";
+    }
+    
+    @PostMapping("/remove-payment-method/{id}")
+    public String removePaymentMethod(@PathVariable Long id,
+                                    Authentication authentication,
+                                    RedirectAttributes redirectAttributes) {
+        try {
+            String email = authentication.getName();
+            User user = userService.getUserByEmail(email);
+            
+            paymentMethodService.removePaymentMethod(user, id);
+            redirectAttributes.addFlashAttribute("successMessage", "Payment method removed successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/profile";
+    }
+    
+    @PostMapping("/set-default-payment/{id}")
+    public String setDefaultPaymentMethod(@PathVariable Long id,
+                                        Authentication authentication,
+                                        RedirectAttributes redirectAttributes) {
+        try {
+            String email = authentication.getName();
+            User user = userService.getUserByEmail(email);
+            
+            paymentMethodService.setDefaultPaymentMethod(user, id);
+            redirectAttributes.addFlashAttribute("successMessage", "Default payment method updated!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/profile";
     }
 }

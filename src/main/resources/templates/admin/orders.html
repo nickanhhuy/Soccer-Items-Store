@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders - HuSoccer</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <!-- Alerts -->
+    <div th:if="${successMessage}" class="alert alert-success">
+        <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-error">
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+            <div class="sidebar-header">
+                <h1>HuSoccer</h1>
+                <span class="sidebar-subtitle">Admin Dashboard</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a th:href="@{/admin/analytics}" class="nav-item">
+                    Dashboard
+                </a>
+                <a th:href="@{/admin/products}" class="nav-item">
+                    Products
+                </a>
+                <a th:href="@{/admin/inventory}" class="nav-item">
+                    Inventory
+                </a>
+                <a th:href="@{/admin/orders}" class="nav-item active">
+                    Orders
+                </a>
+                <a th:href="@{/admin/users}" class="nav-item">
+                    Users
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a th:href="@{/menu}" class="back-link">← Back to Store</a>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard -->
+        <main class="dashboard-main">
+            <!-- Top Header -->
+            <div class="dashboard-header">
+                <div class="header-left">
+                    <h1>Orders</h1>
+                    <p>View and manage all customer orders</p>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" placeholder="Search..." class="search-input">
+                        <button class="search-btn">Search</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-content">
+                <!-- Orders Section -->
+                <div class="orders-section">
+                    <div class="section-header">
+                        <h3><span th:text="${allOrders != null ? #lists.size(allOrders) : 0}">0</span> Customer Orders</h3>
+                        <div class="section-actions">
+                            <button class="section-action-btn">Actions ▼</button>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${allOrders == null || #lists.isEmpty(allOrders)}" class="empty-state">
+                        <p>No customer orders yet</p>
+                    </div>
+
+                    <div th:if="${allOrders != null && !#lists.isEmpty(allOrders)}">
+                        <div th:each="order : ${allOrders}" class="order-card">
+                            <div class="order-header">
+                                <div class="order-id">Order #<span th:text="${order.id}">1</span></div>
+                                <div class="order-meta">
+                                    <span th:text="${order.username}">Customer</span>
+                                    <span th:text="${order.orderDate}">Date</span>
+                                    <strong class="amount">$<span th:text="${#numbers.formatDecimal(order.totalAmount, 1, 2)}">0.00</span></strong>
+                                </div>
+                            </div>
+                            
+                            <div class="order-details">
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <strong>Customer</strong>
+                                        <span th:text="${order.fullName}">Name</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Phone</strong>
+                                        <span th:text="${order.phone}">Phone</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Address</strong>
+                                        <span th:text="${order.address} + ', ' + ${order.city} + ', ' + ${order.state} + ' ' + ${order.zipCode}">Address</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Payment Method</strong>
+                                        <span th:text="${order.paymentMethod}">Cash</span>
+                                    </div>
+                                </div>
+                                
+                                <div th:if="${order.orderItems != null && !#lists.isEmpty(order.orderItems)}" style="margin-top: 20px;">
+                                    <h4 style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">Order Items</h4>
+                                    <div class="orders-table">
+                                        <table class="dashboard-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Product</th>
+                                                    <th>Category</th>
+                                                    <th>Size</th>
+                                                    <th>Qty</th>
+                                                    <th>Price</th>
+                                                    <th>Subtotal</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="item : ${order.orderItems}">
+                                                    <td>
+                                                        <div class="product-cell">
+                                                            <img th:src="@{'/image/' + ${item.image}}" alt="Product" class="product-image">
+                                                            <span th:text="${item.productName}">Product</span>
+                                                        </div>
+                                                    </td>
+                                                    <td><span class="status-badge completed" th:text="${item.category}">Category</span></td>
+                                                    <td th:text="${item.size}">M</td>
+                                                    <td th:text="${item.quantity}">1</td>
+                                                    <td>$<span th:text="${#numbers.formatDecimal(item.price, 1, 2)}">0.00</span></td>
+                                                    <td class="amount">$<span th:text="${#numbers.formatDecimal(item.price * item.quantity, 1, 2)}">0.00</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -24,6 +24,7 @@ public class User {
     @NotBlank(message = "Email is required")
     @Email(message = "Please provide a valid email address")
     @Size(max = 100, message = "Email must not exceed 100 characters")
+    @Column(nullable = false, unique = true)
     private String email;
 
     @NotBlank(message = "Role is required")
@@ -38,6 +39,15 @@ public class User {
 
     @Column(length = 20)
     private String phone;
+    
+    @Column(nullable = false)
+    private boolean emailVerified = false;
+    
+    @Column(length = 64)
+    private String verificationToken;
+    
+    @Column
+    private java.time.LocalDateTime tokenExpiryDate;
 
     public User() {}
     public User(String userName, String password, String email, String role) {
@@ -45,6 +55,7 @@ public class User {
         this.password = password;
         this.email = email;
         this.role = role;
+        this.emailVerified = false;
     }
 
     public Long getUser_id() {
@@ -109,5 +120,29 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+    
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+    
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+    
+    public String getVerificationToken() {
+        return verificationToken;
+    }
+    
+    public void setVerificationToken(String verificationToken) {
+        this.verificationToken = verificationToken;
+    }
+    
+    public java.time.LocalDateTime getTokenExpiryDate() {
+        return tokenExpiryDate;
+    }
+    
+    public void setTokenExpiryDate(java.time.LocalDateTime tokenExpiryDate) {
+        this.tokenExpiryDate = tokenExpiryDate;
     }
 }

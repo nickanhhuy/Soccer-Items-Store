@@ -5,9 +5,11 @@ import com.example.socceritemsstore.model.Order;
 import com.example.socceritemsstore.model.OrderItem;
 import com.example.socceritemsstore.model.User;
 import com.example.socceritemsstore.repository.UserRepo;
+import com.example.socceritemsstore.service.AnalyticsService;
 import com.example.socceritemsstore.service.ItemService;
 import com.example.socceritemsstore.service.OrderService;
 import com.example.socceritemsstore.service.UserService;
+import com.example.socceritemsstore.service.EmailService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -41,6 +43,12 @@ public class MainController {
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private EmailService emailService;
+    
+    @Autowired
+    private AnalyticsService analyticsService;
 
     // Root path - redirect to menu
     @GetMapping("/")
@@ -52,9 +60,12 @@ public class MainController {
     @GetMapping("/menu")
     public String menu(Model model, Authentication authentication, HttpSession session) {
         if (authentication != null && authentication.isAuthenticated()) {
-            String username = authentication.getName();
-            model.addAttribute("username", username);
-            System.out.println("DEBUG: Authenticated user -> " + username);
+            String email = authentication.getName();  // Now returns email
+            Optional<User> userOptional = userRepo.findByEmail(email);
+            if (userOptional.isPresent()) {
+                model.addAttribute("username", userOptional.get().getUserName());
+                System.out.println("DEBUG: Authenticated user -> " + userOptional.get().getUserName());
+            }
         }
         // keep existing orders in session intact
         if (session.getAttribute("orders") == null) {
@@ -95,7 +106,11 @@ public class MainController {
 
 
         if (authentication != null && authentication.isAuthenticated()) {
-            model.addAttribute("username", authentication.getName());
+            String email = authentication.getName();
+            Optional<User> userOptional = userRepo.findByEmail(email);
+            if (userOptional.isPresent()) {
+                model.addAttribute("username", userOptional.get().getUserName());
+            }
         }
         System.out.println("DEBUG: total = " + total);
         return "order";
@@ -103,7 +118,11 @@ public class MainController {
     @GetMapping("/order")
     public String showOrderPage(Model model, Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()) {
-            model.addAttribute("username", authentication.getName());
+            String email = authentication.getName();
+            Optional<User> userOptional = userRepo.findByEmail(email);
+            if (userOptional.isPresent()) {
+                model.addAttribute("username", userOptional.get().getUserName());
+            }
         }
         return "order";
     }
@@ -111,7 +130,11 @@ public class MainController {
     @GetMapping("/checkout")
     public String checkout(Model model, Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()) {
-            model.addAttribute("username", authentication.getName());
+            String email = authentication.getName();
+            Optional<User> userOptional = userRepo.findByEmail(email);
+            if (userOptional.isPresent()) {
+                model.addAttribute("username", userOptional.get().getUserName());
+            }
         }
         return "checkout";
     }
@@ -130,9 +153,17 @@ public class MainController {
                                    HttpSession session,
                                    RedirectAttributes redirectAttributes) {
         String username = "Guest";
+        String customerEmail = null;
+        
         if (authentication != null && authentication.isAuthenticated()) {
-            username = authentication.getName();
-            model.addAttribute("username", username);
+            String email = authentication.getName();  // Now returns email
+            Optional<User> userOptional = userRepo.findByEmail(email);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                username = user.getUserName();
+                customerEmail = user.getEmail();
+                model.addAttribute("username", username);
+            }
         }
         
         try {
@@ -163,6 +194,17 @@ public class MainController {
             System.out.println("DEBUG: Attempting to save order for user: " + username);
             Order savedOrder = orderService.saveOrder(newOrder);
             System.out.println("DEBUG: Order saved successfully with ID: " + savedOrder.getId());
+            
+            // Send order confirmation email
+            if (customerEmail != null) {
+                try {
+                    emailService.sendOrderConfirmation(savedOrder, customerEmail);
+                    System.out.println("Order confirmation email sent to: " + customerEmail);
+                } catch (Exception e) {
+                    System.err.println("Failed to send order confirmation email: " + e.getMessage());
+                    // Don't fail checkout if email fails
+                }
+            }
             
             // Pass order details to checkout page
             model.addAttribute("fullName", fullName);
@@ -201,16 +243,21 @@ public class MainController {
     @GetMapping("/history")
     public String orderHistory(Model model, Authentication authentication, HttpSession session) {
         if (authentication != null && authentication.isAuthenticated()) {
-            String username = authentication.getName();
-            model.addAttribute("username", username);
-            
-            // Get orders from database for this user
-            List<com.example.socceritemsstore.model.Order> dbOrders = orderService.getOrdersByUsername(username);
-            System.out.println("DEBUG: Found " + dbOrders.size() + " orders for user: " + username);
-            for (com.example.socceritemsstore.model.Order order : dbOrders) {
-                System.out.println("DEBUG: Order ID: " + order.getId() + ", Total: " + order.getTotalAmount() + ", Items: " + order.getOrderItems().size());
+            String email = authentication.getName();  // Now returns email
+            Optional<User> userOptional = userRepo.findByEmail(email);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                String username = user.getUserName();
+                model.addAttribute("username", username);
+                
+                // Get orders from database for this user
+                List<com.example.socceritemsstore.model.Order> dbOrders = orderService.getOrdersByUsername(username);
+                System.out.println("DEBUG: Found " + dbOrders.size() + " orders for user: " + username);
+                for (com.example.socceritemsstore.model.Order order : dbOrders) {
+                    System.out.println("DEBUG: Order ID: " + order.getId() + ", Total: " + order.getTotalAmount() + ", Items: " + order.getOrderItems().size());
+                }
+                model.addAttribute("dbOrders", dbOrders);
             }
-            model.addAttribute("dbOrders", dbOrders);
         }
         
         // Also get current session orders (cart)
@@ -230,153 +277,4 @@ public class MainController {
         return "history";
     }
     
-    //For admin only
-    @GetMapping("/admin")
-    public String addItem(Model model, Authentication authentication) {
-        // Check if user is authenticated
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return "error/403";
-        }
-        
-        // Check if user is admin
-        String username = authentication.getName();
-        Optional<User> userOptional = userRepo.findByUserName(username);
-        
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            if ("ADMIN".equals(user.getRole())) {
-                model.addAttribute("username", username);
-                model.addAttribute("items", itemService.getAllItems());
-                model.addAttribute("item", new Item());
-                
-                // Get all orders for admin
-                List<com.example.socceritemsstore.model.Order> allOrders = orderService.getAllOrders();
-                model.addAttribute("allOrders", allOrders);
-                
-                // Get all users for admin
-                List<User> allUsers = userService.getAllUsers();
-                model.addAttribute("allUsers", allUsers);
-                model.addAttribute("newUser", new User());
-                
-                return "admin";
-            }
-        }
-        
-        // If not admin, show 403 error page
-        return "error/403";
-    }
-    // Admin: Save item with validation
-    @PostMapping("/admin/saveItem")
-    public String saveItem(@Valid @ModelAttribute("item") Item item, 
-                          BindingResult bindingResult,
-                          Model model,
-                          RedirectAttributes redirectAttributes,
-                          Authentication authentication) {
-        // Check for validation errors
-        if (bindingResult.hasErrors()) {
-            // Add error messages to model
-            model.addAttribute("items", itemService.getAllItems());
-            model.addAttribute("allOrders", orderService.getAllOrders());
-            
-            if (authentication != null && authentication.isAuthenticated()) {
-                model.addAttribute("username", authentication.getName());
-            }
-            
-            // Return to admin page with errors
-            return "admin";
-        }
-        
-        try {
-            itemService.addItemOrder(item);
-            redirectAttributes.addFlashAttribute("successMessage", "Product saved successfully!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error saving product: " + e.getMessage());
-        }
-        
-        return "redirect:/admin";
-    }
-    
-    // Admin: Delete item
-    @GetMapping("/admin/delete/{id}")
-    public String deleteItem(@PathVariable Long id) {
-        itemService.deleteItem(id);
-        return "redirect:/admin";
-    }
-    
-    // Admin: Edit item (for now, just redirect back - you can add edit form later)
-    @GetMapping("/admin/edit/{id}")
-    public String editItem(@PathVariable Long id, Model model) {
-        Item item = itemService.getItem(id);
-        if (item != null) {
-            model.addAttribute("item", item);
-            model.addAttribute("items", itemService.getAllItems());
-            model.addAttribute("allOrders", orderService.getAllOrders());
-            model.addAttribute("allUsers", userService.getAllUsers());
-            model.addAttribute("newUser", new User());
-            model.addAttribute("editMode", true);
-            return "admin";
-        }
-        return "redirect:/admin";
-    }
-    
-    // Admin: Create new user
-    @PostMapping("/admin/createUser")
-    public String createUser(@RequestParam String userName,
-                            @RequestParam String password,
-                            @RequestParam String email,
-                            @RequestParam(required = false) String fullName,
-                            @RequestParam(required = false) String phone,
-                            @RequestParam String role,
-                            RedirectAttributes redirectAttributes) {
-        try {
-            userService.createUser(userName, password, email, fullName, phone, role);
-            redirectAttributes.addFlashAttribute("successMessage", "User created successfully!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error creating user: " + e.getMessage());
-        }
-        return "redirect:/admin";
-    }
-    
-    // Admin: Update user
-    @PostMapping("/admin/updateUser")
-    public String updateUser(@RequestParam Long userId,
-                            @RequestParam String fullName,
-                            @RequestParam String email,
-                            @RequestParam(required = false) String phone,
-                            @RequestParam String role,
-                            RedirectAttributes redirectAttributes) {
-        try {
-            userService.updateUser(userId, fullName, email, phone, role);
-            redirectAttributes.addFlashAttribute("successMessage", "User updated successfully!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error updating user: " + e.getMessage());
-        }
-        return "redirect:/admin";
-    }
-    
-    // Admin: Delete user
-    @GetMapping("/admin/deleteUser/{id}")
-    public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        try {
-            userService.deleteUserById(id);
-            redirectAttributes.addFlashAttribute("successMessage", "User deleted successfully!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error deleting user: " + e.getMessage());
-        }
-        return "redirect:/admin";
-    }
-    
-    // Admin: Toggle user role
-    @GetMapping("/admin/toggleRole/{id}")
-    public String toggleUserRole(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        try {
-            User user = userService.getUserById(id);
-            String newRole = "ADMIN".equals(user.getRole()) ? "USER" : "ADMIN";
-            userService.updateUserRole(id, newRole);
-            redirectAttributes.addFlashAttribute("successMessage", "User role updated to " + newRole);
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error updating role: " + e.getMessage());
-        }
-        return "redirect:/admin";
-    }
 }

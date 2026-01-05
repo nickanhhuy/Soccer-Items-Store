@@ -125,6 +125,40 @@ body {
     white-space: nowrap;
 }
 
+/* Cart Link */
+.cart-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: #1a1a1a;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.cart-link:hover {
+    background: #333;
+    transform: translateY(-2px);
+}
+
+.cart-icon {
+    font-size: 20px;
+}
+
+.cart-count {
+    background: #4ade80;
+    color: #1a1a1a;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    min-width: 20px;
+    text-align: center;
+}
+
 .user-menu {
     display: flex;
     align-items: center;
@@ -649,6 +683,7 @@ body {
     background-color: #1a1a1a;
     color: #ffffff;
     padding: 60px 0 20px;
+    scroll-margin-top: 80px;
 }
 
 .footer-content {
@@ -697,27 +732,42 @@ body {
     color: #4ade80;
 }
 
-.social-links {
-    display: flex;
-    gap: 15px;
-    margin-top: 20px;
+.contact-info {
+    margin-top: 8px;
 }
 
-.social-links a {
-    width: 40px;
-    height: 40px;
-    background: #2d2d2d;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.contact-info p {
+    margin-bottom: 10px;
+    color: #a3a3a3;
+    font-size: 14px;
+}
+
+.contact-info strong {
     color: #ffffff;
+    font-weight: 500;
+}
+
+.social-links {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.social-link {
+    padding: 8px 16px;
+    background: #2d2d2d;
+    border-radius: 6px;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
     transition: all 0.3s ease;
 }
 
-.social-links a:hover {
+.social-link:hover {
     background: #4ade80;
-    transform: translateY(-3px);
+    color: #1a1a1a;
+    transform: translateY(-2px);
 }
 
 .footer-bottom {
@@ -726,6 +776,16 @@ body {
     border-top: 1px solid #2d2d2d;
     color: #a3a3a3;
     font-size: 14px;
+}
+
+.footer-bottom a {
+    color: #a3a3a3;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-bottom a:hover {
+    color: #4ade80;
 }
 
 /* Responsive Design */

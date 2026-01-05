@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import software.amazon.awssdk.services.s3.S3Client;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -40,14 +42,22 @@ public class UserService {
         if (userRepo.findByEmail(email).isPresent()) {
             throw new RuntimeException("Email already exists: " + email);
         }
+        
         User user = new User();
         user.setUserName(userName);
         user.setPassword(passwordEncoder.encode(password));
         user.setEmail(email);
+        user.setEmailVerified(false);  // Email not verified yet
+        
+        // Generate verification token
+        String token = UUID.randomUUID().toString();
+        user.setVerificationToken(token);
+        user.setTokenExpiryDate(LocalDateTime.now().plusHours(24));  // Token valid for 24 hours
         
         // Assign username "huynguyen" as an ADMIN role. Default role when the user registers is USER.
         if ("huynguyen".equalsIgnoreCase(userName)) {
             user.setRole("ADMIN"); // UPDATE admin role to huynguyen.
+            user.setEmailVerified(true);  // Admin doesn't need verification
         } else {
             user.setRole("USER");
         }
@@ -57,23 +67,45 @@ public class UserService {
         // Backup user data to private S3 bucket
         backupUserToS3(savedUser);
         
-        // Send welcome email asynchronously after transaction commits
-        sendWelcomeEmailAsync(email, userName);
+        // Send verification email asynchronously after transaction commits
+        if (!user.isEmailVerified()) {
+            sendVerificationEmailAsync(email, userName, token);
+        }
     }
     
-    // Send email outside of transaction to prevent rollback
-    private void sendWelcomeEmailAsync(String email, String userName) {
+    // Send verification email outside of transaction to prevent rollback
+    private void sendVerificationEmailAsync(String email, String userName, String token) {
         try {
-            emailService.sendWelcomeEmail(email, userName);
+            emailService.sendVerificationEmail(email, userName, token);
         } catch (Exception e) {
-            System.err.println("Failed to send welcome email: " + e.getMessage());
+            System.err.println("Failed to send verification email: " + e.getMessage());
             // Don't fail registration if email fails
         }
+    }
+    
+    // Verify email with token and return user
+    public User verifyEmailAndGetUser(String token) {
+        return userRepo.findByVerificationToken(token)
+            .map(user -> {
+                if (user.getTokenExpiryDate().isAfter(LocalDateTime.now())) {
+                    user.setEmailVerified(true);
+                    user.setVerificationToken(null);
+                    user.setTokenExpiryDate(null);
+                    return userRepo.save(user);
+                }
+                return null;  // Token expired
+            })
+            .orElse(null);  // Token not found
     }
     
     public User getUserByUsername(String username) {
         return userRepo.findByUserName(username)
             .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
+    }
+    
+    public User getUserByEmail(String email) {
+        return userRepo.findByEmail(email)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
     }
     
     public User getUserById(Long id) {

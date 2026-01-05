@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory - HuSoccer</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <!-- Alerts -->
+    <div th:if="${successMessage}" class="alert alert-success">
+        <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-error">
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+            <div class="sidebar-header">
+                <h1>HuSoccer</h1>
+                <span class="sidebar-subtitle">Admin Dashboard</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a th:href="@{/admin/analytics}" class="nav-item">
+                    Dashboard
+                </a>
+                <a th:href="@{/admin/products}" class="nav-item">
+                    Products
+                </a>
+                <a th:href="@{/admin/inventory}" class="nav-item active">
+                    Inventory
+                </a>
+                <a th:href="@{/admin/orders}" class="nav-item">
+                    Orders
+                </a>
+                <a th:href="@{/admin/users}" class="nav-item">
+                    Users
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a th:href="@{/menu}" class="back-link">← Back to Store</a>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard -->
+        <main class="dashboard-main">
+            <!-- Top Header -->
+            <div class="dashboard-header">
+                <div class="header-left">
+                    <h1>Inventory</h1>
+                    <p>Manage your product inventory</p>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" placeholder="Search..." class="search-input">
+                        <button class="search-btn">Search</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-content">
+                <!-- Inventory Table -->
+                <div class="orders-section">
+                    <div class="section-header">
+                        <h3><span th:text="${items != null ? #lists.size(items) : 0}">0</span> Products in Stock</h3>
+                        <div class="section-actions">
+                            <a th:href="@{/admin/products}" class="btn btn-primary">Add Product</a>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${items == null || #lists.isEmpty(items)}" class="empty-state">
+                        <p>No products in inventory yet</p>
+                        <a th:href="@{/admin/products}" class="btn btn-primary">Add Your First Product</a>
+                    </div>
+
+                    <div th:if="${items != null && !#lists.isEmpty(items)}" class="orders-table">
+                        <table class="dashboard-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Product Name</th>
+                                    <th>Category</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="item : ${items}">
+                                    <td th:text="${item.id}">1</td>
+                                    <td th:text="${item.name}">Product</td>
+                                    <td><span class="status-badge completed" th:text="${item.category}">Category</span></td>
+                                    <td><span class="badge badge-success" th:text="${item.quantity}">0</span></td>
+                                    <td class="amount">$<span th:text="${#numbers.formatDecimal(item.price, 1, 2)}">0.00</span></td>
+                                    <td>
+                                        <a th:href="@{'/admin/edit/' + ${item.id}}" class="table-action">Edit</a>
+                                        <form th:action="@{'/admin/delete/' + ${item.id}}" method="post" style="display: inline; margin-left: 8px;">
+                                            <button type="submit" class="table-action" style="color: #e74c3c; background: none; border: none; cursor: pointer;">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

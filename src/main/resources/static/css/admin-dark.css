@@ -1,0 +1,125 @@
+/* Dark theme override for admin page - white background with black boxes */
+body {
+    background-color: #ffffff !important;
+    color: #1a1a1a !important;
+}
+
+/* All card/box elements */
+.form-card,
+.table-card,
+.order-card,
+.empty-orders,
+.modal-content {
+    background: #0a0a0a !important;
+    border: 1px solid #262626 !important;
+    color: #ffffff !important;
+}
+
+/* Form elements */
+.form-group label {
+    color: #ffffff !important;
+}
+
+.form-group input,
+.form-group select {
+    background-color: #1a1a1a !important;
+    border-color: #262626 !important;
+    color: #ffffff !important;
+}
+
+.form-group input::placeholder {
+    color: #666 !important;
+}
+
+/* Table styling */
+.products-table thead,
+.users-table thead,
+.items-table thead {
+    background: #1a1a1a !important;
+}
+
+.products-table th,
+.users-table th,
+.items-table th {
+    color: #a8a8a8 !important;
+    border-bottom-color: #262626 !important;
+}
+
+.products-table td,
+.users-table td,
+.items-table td {
+    color: #ffffff !important;
+    border-bottom-color: #262626 !important;
+}
+
+.table-row:hover,
+.users-table tbody tr:hover {
+    background-color: #1a1a1a !important;
+}
+
+.name-cell,
+.order-id,
+.price-value,
+.subtotal {
+    color: #ffffff !important;
+}
+
+.id-cell,
+.order-user,
+.order-date,
+.info-item {
+    color: #a8a8a8 !important;
+}
+
+/* Order cards */
+.order-header {
+    background: #1a1a1a !important;
+    border-bottom-color: #262626 !important;
+}
+
+.shipping-info {
+    background: #1a1a1a !important;
+    border-color: #262626 !important;
+}
+
+.shipping-info h4,
+.order-items h4,
+.info-item strong {
+    color: #ffffff !important;
+}
+
+/* Stat badges */
+.stat {
+    background: #0a0a0a !important;
+    color: #a8a8a8 !important;
+    border: 1px solid #262626 !important;
+}
+
+/* Modal */
+.modal-content h3 {
+    color: #ffffff !important;
+}
+
+.modal-content .form-group label {
+    color: #ffffff !important;
+}
+
+.modal-content .form-group input,
+.modal-content .form-group select {
+    background-color: #1a1a1a !important;
+    border-color: #262626 !important;
+    color: #ffffff !important;
+}
+
+.modal-content .form-group input:disabled {
+    background-color: #0a0a0a !important;
+    color: #666 !important;
+}
+
+.close {
+    color: #a8a8a8 !important;
+}
+
+.close:hover {
+    color: #ffffff !important;
+}

@@ -7,61 +7,63 @@
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background-color: #f9fafb;
+    background: url('/image/background/chelsea.jpg') no-repeat center center fixed;
+    background-size: cover;
     color: #1a1a1a;
     line-height: 1.6;
-}
-
-/* Register Page Layout */
-.register-page {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden;
     position: relative;
-    padding: 20px;
+    min-height: 100vh;
 }
 
-.register-background {
+body::before {
+    content: '';
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-    background-image: url('https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1600');
-    background-size: cover;
-    background-position: center;
-    background-blend-mode: overlay;
-    z-index: -2;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(5px);
+    z-index: 0;
+}
+
+/* Register Page Layout */
+.register-page {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 20px;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.register-background {
+    display: none;
 }
 
 .bg-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 100%);
-    z-index: -1;
+    display: none;
 }
 
 /* Register Container */
 .register-container {
     background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    border-radius: 20px;
-    padding: 40px;
+    border: 2px solid #000000;
+    border-radius: 12px;
+    padding: 30px;
     width: 100%;
-    max-width: 420px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    max-width: 550px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
 }
 
 /* Register Header */
 .register-header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 24px;
 }
 
 .logo {
@@ -69,64 +71,77 @@ body {
     align-items: center;
     justify-content: center;
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .logo i {
-    font-size: 32px;
-    color: #4ade80;
+    font-size: 28px;
+    color: #000000;
 }
 
 .logo h1 {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 700;
-    color: #1a1a1a;
+    color: #000000;
 }
 
 .register-header h2 {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 600;
-    color: #1a1a1a;
-    margin-bottom: 8px;
+    color: #000000;
+    margin-bottom: 6px;
 }
 
 .register-header p {
-    color: #666;
-    font-size: 14px;
+    color: #666666;
+    font-size: 13px;
 }
 
 /* Form Styles */
 .register-form {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+}
+
+.password-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 640px) {
+    .password-row {
+        grid-template-columns: 1fr;
+    }
 }
 
 .form-group label {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 14px;
+    gap: 6px;
+    font-size: 13px;
     font-weight: 600;
-    color: #1a1a1a;
-    margin-bottom: 8px;
+    color: #000000;
+    margin-bottom: 6px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .form-group label i {
-    color: #4ade80;
-    font-size: 16px;
+    color: #000000;
+    font-size: 14px;
 }
 
 .form-group input {
     width: 100%;
-    padding: 14px 16px;
-    border: 2px solid #e5e5e5;
-    border-radius: 10px;
-    font-size: 15px;
+    padding: 12px 14px;
+    border: 2px solid #000000;
+    border-radius: 8px;
+    font-size: 14px;
     font-weight: 500;
     background-color: #ffffff;
     transition: all 0.3s ease;
@@ -134,82 +149,81 @@ body {
 
 .form-group input:focus {
     outline: none;
-    border-color: #4ade80;
-    box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+    border-color: #000000;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
 }
 
 .form-group input::placeholder {
-    color: #a3a3a3;
+    color: #999999;
     font-weight: 400;
 }
 
 /* Buttons */
 .btn {
-    padding: 14px 24px;
-    border-radius: 10px;
+    padding: 12px 20px;
+    border-radius: 8px;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 14px;
     cursor: pointer;
     transition: all 0.3s ease;
     border: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     text-decoration: none;
     width: 100%;
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+    background: #000000;
     color: #ffffff;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(74, 222, 128, 0.3);
+    background: #333333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .btn-outline {
-    background: transparent;
-    color: #1a1a1a;
-    border: 2px solid #e5e5e5;
+    background: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
 }
 
 .btn-outline:hover {
-    border-color: #4ade80;
-    color: #4ade80;
-    background: rgba(74, 222, 128, 0.05);
+    background: #000000;
+    color: #ffffff;
 }
 
 /* Register Footer */
 .register-footer {
     text-align: center;
-    padding-top: 20px;
+    padding-top: 16px;
     border-top: 1px solid #e5e5e5;
 }
 
 .register-footer p {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 15px;
+    color: #666666;
+    font-size: 13px;
+    margin-bottom: 12px;
 }
 
 /* Responsive Design */
 @media (max-width: 480px) {
     .register-container {
-        padding: 30px 20px;
+        padding: 24px 18px;
         margin: 10px;
     }
     
     .logo h1 {
-        font-size: 24px;
+        font-size: 20px;
     }
     
     .register-header h2 {
-        font-size: 20px;
+        font-size: 18px;
     }
 }
 
@@ -227,7 +241,7 @@ body {
 /* Focus States for Accessibility */
 .btn:focus,
 input:focus {
-    outline: 2px solid #4ade80;
+    outline: 2px solid #000000;
     outline-offset: 2px;
 }
 
@@ -239,8 +253,8 @@ input:focus {
 /* Form Hints */
 .form-hint {
     display: block;
-    margin-top: 5px;
-    font-size: 12px;
+    margin-top: 4px;
+    font-size: 11px;
     color: #737373;
     font-style: italic;
 }
@@ -251,7 +265,7 @@ input:invalid:not(:placeholder-shown) {
 }
 
 input:valid:not(:placeholder-shown) {
-    border-color: #22c55e;
+    border-color: #000000;
 }
 
 /* Alert styles */
@@ -259,14 +273,14 @@ input:valid:not(:placeholder-shown) {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 15px;
+    padding: 12px;
     border-radius: 8px;
-    margin-bottom: 20px;
-    font-size: 14px;
+    margin-bottom: 16px;
+    font-size: 13px;
 }
 
 .alert i {
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .alert-error {
@@ -276,7 +290,46 @@ input:valid:not(:placeholder-shown) {
 }
 
 .alert-success {
-    background: #d1fae5;
-    border: 1px solid #a7f3d0;
-    color: #059669;
+    background: #f0f0f0;
+    border: 1px solid #000000;
+    color: #000000;
+}
+
+/* Password Input Wrapper */
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-wrapper input {
+    padding-right: 45px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    color: #000000;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-password:hover {
+    color: #666666;
+}
+
+.toggle-password i {
+    font-size: 16px;
+}
+
+.toggle-password:focus {
+    outline: 2px solid #000000;
+    outline-offset: 2px;
+    border-radius: 4px;
 }

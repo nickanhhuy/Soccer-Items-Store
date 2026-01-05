@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings - HuSoccer Shop</title>
+    <title>Account Settings - HuSoccer Shop</title>
     <link rel="stylesheet" th:href="@{/css/profile.css}">
 </head>
 <body>
@@ -18,28 +18,33 @@
     <div class="profile-container">
         <!-- Left Sidebar -->
         <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>Settings</h2>
+            <!-- User Avatar and Info -->
+            <div class="user-info">
+                <div class="avatar-container">
+                    <img th:src="${user.avatarUrl != null ? user.avatarUrl : '/image/default-avatar.png'}" 
+                         alt="User Avatar" class="user-avatar">
+                </div>
             </div>
             
             <nav class="sidebar-nav">
-                <a href="#edit-profile" class="nav-item active" onclick="showSection('edit-profile', event)">
-                    Edit profile
+                <a href="#account-details" class="nav-item active" onclick="showSection('account-details', event)">
+                    <i class="icon-user"></i>
+                    Account Details
                 </a>
                 <a href="#change-password" class="nav-item" onclick="showSection('change-password', event)">
-                    Password and security
+                    <i class="icon-key"></i>
+                    Change Password
                 </a>
-                <a href="#update-avatar" class="nav-item" onclick="showSection('update-avatar', event)">
-                    Update avatar
+                <a href="#payment-methods" class="nav-item" onclick="showSection('payment-methods', event)">
+                    <i class="icon-card"></i>
+                    Payment Methods
                 </a>
-                <a href="#payment-method" class="nav-item" onclick="showSection('payment-method', event)">
-                    Payment method
-                </a>
-                <a href="#delete-account" class="nav-item" onclick="showSection('delete-account', event)">
-                    Delete account
+                <a href="#logout" class="nav-item" onclick="logout()">
+                    <i class="icon-logout"></i>
+                    Logout
                 </a>
             </nav>
-
+            
             <div class="sidebar-footer">
                 <a th:href="@{/menu}" class="back-link">← Back to Shop</a>
             </div>
@@ -47,154 +52,180 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            <!-- Edit Profile Section -->
-            <section id="edit-profile" class="content-section active">
-                <h1 class="section-title">Edit profile</h1>
-                
+            <div class="content-header">
+                <h1>Account Settings</h1>
+            </div>
+            <!-- Account Details Section -->
+            <section id="account-details" class="content-section active">
                 <form th:action="@{/profile/update}" method="post" class="profile-form">
-                    <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Email address</label>
+                        <input type="email" name="email" th:value="${user.email}" 
+                               placeholder="Enter your email" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">First name</label>
+                        <input type="text" name="firstName" th:value="${user.fullName != null ? user.fullName.split(' ')[0] : ''}" 
+                               placeholder="Enter your first name" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Last name</label>
+                        <input type="text" name="lastName" th:value="${user.fullName != null and user.fullName.contains(' ') ? user.fullName.substring(user.fullName.indexOf(' ') + 1) : ''}" 
+                               placeholder="Enter your last name" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" name="phone" th:value="${user.phone}" 
+                               placeholder="Enter your phone number" class="form-input">
+                    </div>
+
+                    <div class="form-group">
                         <label class="form-label">Username</label>
-                        <input type="text" th:value="${user.userName}" disabled class="form-input disabled">
+                        <input type="text" th:value="${user.userName}" 
+                               placeholder="Username" class="form-input" disabled>
+                        <small class="form-help">Username cannot be changed</small>
                     </div>
 
-                    <div class="form-row">
-                        <label class="form-label" for="fullName">Name</label>
-                        <input type="text" id="fullName" name="fullName" 
-                               th:value="${user.fullName}" 
-                               placeholder="Name" 
-                               class="form-input">
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                        <a th:href="@{/menu}" class="btn-secondary">Back to Shop</a>
                     </div>
-
-                    <div class="form-row">
-                        <label class="form-label" for="email">Email</label>
-                        <input type="email" id="email" name="email" 
-                               th:value="${user.email}" 
-                               placeholder="Email" 
-                               required class="form-input">
-                    </div>
-
-                    <div class="form-row">
-                        <label class="form-label" for="phone">Phone</label>
-                        <input type="tel" id="phone" name="phone" 
-                               th:value="${user.phone}" 
-                               placeholder="Phone number" 
-                               class="form-input">
-                    </div>
-
-                    <button type="submit" class="btn-submit">Submit</button>
                 </form>
             </section>
 
             <!-- Change Password Section -->
             <section id="change-password" class="content-section">
-                <h1 class="section-title">Password and security</h1>
-                
                 <form th:action="@{/profile/change-password}" method="post" class="profile-form">
-                    <div class="form-row">
-                        <label class="form-label" for="currentPassword">Current password</label>
-                        <input type="password" id="currentPassword" name="currentPassword" 
-                               placeholder="Current password" 
-                               required class="form-input">
+                    <div class="form-group">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" name="currentPassword" 
+                               placeholder="Enter current password" class="form-input" required>
                     </div>
 
-                    <div class="form-row">
-                        <label class="form-label" for="newPassword">New password</label>
-                        <input type="password" id="newPassword" name="newPassword" 
-                               placeholder="New password" 
-                               required minlength="6" class="form-input">
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <input type="password" name="newPassword" 
+                               placeholder="Enter new password" class="form-input" required minlength="6">
                     </div>
 
-                    <div class="form-row">
-                        <label class="form-label" for="confirmPassword">Confirm new password</label>
-                        <input type="password" id="confirmPassword" name="confirmPassword" 
-                               placeholder="Confirm new password" 
-                               required minlength="6" class="form-input">
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" name="confirmPassword" 
+                               placeholder="Confirm new password" class="form-input" required minlength="6">
                     </div>
 
-                    <button type="submit" class="btn-submit">Change password</button>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Change Password</button>
+                    </div>
                 </form>
             </section>
 
-            <!-- Update Avatar Section -->
-            <section id="update-avatar" class="content-section">
-                <h1 class="section-title">Avatar</h1>
-                
-                <div class="avatar-section">
-                    <div class="avatar-container">
-                        <img th:src="${user.avatarUrl != null ? user.avatarUrl : '/image/default-avatar.png'}" 
-                             alt="Avatar" class="avatar-img" id="avatarPreview">
-                    </div>
-
-                    <form th:action="@{/profile/upload-avatar}" method="post" enctype="multipart/form-data" id="avatarForm">
-                        <input type="file" name="avatar" id="avatar" accept="image/*" 
-                               style="display: none;" onchange="handleAvatarChange(event)">
-                        <button type="button" class="btn-update-avatar" onclick="document.getElementById('avatar').click()">
-                            Update your avatar
-                        </button>
-                    </form>
-
-                    <form th:action="@{/profile/delete-avatar}" method="post" style="margin-top: 15px;">
-                        <button type="submit" class="btn-delete-avatar">
-                            Delete avatar
-                        </button>
-                    </form>
+            <!-- Payment Methods Section -->
+            <section id="payment-methods" class="content-section">
+                <div class="section-header">
+                    <h2>Payment Methods</h2>
+                    <button class="btn-primary" onclick="showAddPaymentModal()">Add Payment Method</button>
                 </div>
-            </section>
 
-            <!-- Payment Method Section -->
-            <section id="payment-method" class="content-section">
-                <h1 class="section-title">Payment method</h1>
-                
-                <p class="section-description">Manage your payment methods for faster checkout</p>
-                
-                <div class="payment-list">
-                    <div class="payment-item">
-                        <div class="payment-details">
-                            <p class="payment-type">Visa ending in 4242</p>
-                            <p class="payment-expiry">Expires 12/25</p>
+                <div class="payment-methods-list">
+                    <div th:if="${paymentMethods != null and !paymentMethods.empty}">
+                        <div th:each="payment : ${paymentMethods}" class="payment-card">
+                            <div class="payment-info">
+                                <div class="card-brand" th:text="${payment.cardType}"></div>
+                                <div class="card-number" th:text="${payment.maskedCardNumber}"></div>
+                                <div class="card-expiry">Expires <span th:text="${payment.formattedExpiry}"></span></div>
+                                <div th:if="${payment.default}" class="default-badge">Default</div>
+                            </div>
+                            <div class="payment-actions">
+                                <form th:if="${!payment.default}" th:action="@{'/profile/set-default-payment/' + ${payment.id}}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn-text">Set as Default</button>
+                                </form>
+                                <form th:action="@{'/profile/remove-payment-method/' + ${payment.id}}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn-text-danger" onclick="return confirm('Are you sure you want to remove this payment method?')">Remove</button>
+                                </form>
+                            </div>
                         </div>
-                        <button class="btn-text-danger">Remove</button>
+                    </div>
+                    <div th:if="${paymentMethods == null or paymentMethods.empty}" class="empty-state">
+                        <p>No payment methods added yet.</p>
+                        <button class="btn-primary" onclick="showAddPaymentModal()">Add Your First Payment Method</button>
                     </div>
                 </div>
-
-                <button class="btn-text" onclick="alert('Add payment method feature coming soon!')">
-                    Add payment method
-                </button>
-            </section>
-
-            <!-- Delete Account Section -->
-            <section id="delete-account" class="content-section">
-                <h1 class="section-title">Delete account</h1>
-                
-                <div class="warning-section">
-                    <p class="warning-title">Warning: This action cannot be undone</p>
-                    <p class="warning-text">Deleting your account will permanently remove all your data including:</p>
-                    <ul class="warning-list">
-                        <li>Profile information</li>
-                        <li>Order history</li>
-                        <li>Saved payment methods</li>
-                        <li>All personal data</li>
-                    </ul>
-                </div>
-
-                <button class="btn-danger" onclick="showDeleteConfirmation()">
-                    Delete my account
-                </button>
             </section>
         </main>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="modal">
-        <div class="modal-box">
-            <h3 class="modal-title">Delete account?</h3>
-            <p class="modal-text">Are you sure you want to permanently delete your account?</p>
-            <div class="modal-buttons">
-                <form th:action="@{/profile/delete-account}" method="post" style="display: inline;">
-                    <button type="submit" class="btn-modal-danger">Delete</button>
-                </form>
-                <button class="btn-modal-cancel" onclick="hideDeleteConfirmation()">Cancel</button>
+    <!-- Add Payment Method Modal -->
+    <div id="addPaymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Payment Method</h3>
+                <button class="modal-close" onclick="hideAddPaymentModal()">&times;</button>
             </div>
+            <form th:action="@{/profile/add-payment-method}" method="post" class="payment-form">
+                <div class="form-group">
+                    <label class="form-label">Card Holder Name</label>
+                    <input type="text" name="cardHolderName" placeholder="John Doe" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Card Number</label>
+                    <div class="card-input-container">
+                        <input type="text" name="cardNumber" placeholder="1234 5678 9012 3456" 
+                               class="form-input" required maxlength="19" oninput="formatCardNumber(this)">
+                        <span id="cardTypeDisplay" class="card-type-display"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Expiry Month</label>
+                        <select name="expiryMonth" class="form-input" required>
+                            <option value="">MM</option>
+                            <option value="01">01</option>
+                            <option value="02">02</option>
+                            <option value="03">03</option>
+                            <option value="04">04</option>
+                            <option value="05">05</option>
+                            <option value="06">06</option>
+                            <option value="07">07</option>
+                            <option value="08">08</option>
+                            <option value="09">09</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Expiry Year</label>
+                        <select name="expiryYear" class="form-input" required>
+                            <option value="">YYYY</option>
+                            <option th:each="year : ${#numbers.sequence(2024, 2034)}" 
+                                    th:value="${year}" th:text="${year}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">CVV</label>
+                        <input type="text" name="cvv" placeholder="123" class="form-input" 
+                               required maxlength="4" pattern="[0-9]{3,4}" oninput="formatCVV(this)">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="setAsDefault" value="true">
+                        Set as default payment method
+                    </label>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Add Payment Method</button>
+                    <button type="button" class="btn-secondary" onclick="hideAddPaymentModal()">Cancel</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -207,44 +238,88 @@
             event.target.classList.add('active');
         }
 
-        function handleAvatarChange(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('avatarPreview').src = e.target.result;
-                }
-                reader.readAsDataURL(file);
-                document.getElementById('avatarForm').submit();
+        function showAddPaymentModal() {
+            document.getElementById('addPaymentModal').style.display = 'flex';
+        }
+
+        function hideAddPaymentModal() {
+            document.getElementById('addPaymentModal').style.display = 'none';
+        }
+
+        function formatCardNumber(input) {
+            let value = input.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            if (formattedValue !== input.value) {
+                input.value = formattedValue;
+            }
+            
+            // Auto-detect card type
+            const cardType = detectCardType(value);
+            const cardTypeDisplay = document.getElementById('cardTypeDisplay');
+            if (cardTypeDisplay) {
+                cardTypeDisplay.textContent = cardType;
+                cardTypeDisplay.className = 'card-type-display card-' + cardType.toLowerCase();
+            }
+        }
+        
+        function detectCardType(cardNumber) {
+            const number = cardNumber.replace(/\s/g, '');
+            if (number.startsWith('4')) return 'VISA';
+            if (number.startsWith('5') || number.startsWith('2')) return 'MASTERCARD';
+            if (number.startsWith('34') || number.startsWith('37')) return 'AMEX';
+            if (number.startsWith('6')) return 'DISCOVER';
+            return '';
+        }
+        
+        function formatCVV(input) {
+            input.value = input.value.replace(/[^0-9]/g, '');
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '/logout';
             }
         }
 
-        function showDeleteConfirmation() {
-            document.getElementById('deleteModal').style.display = 'flex';
-        }
-
-        function hideDeleteConfirmation() {
-            document.getElementById('deleteModal').style.display = 'none';
-        }
-
+        // Close modal when clicking outside
         window.onclick = function(event) {
-            const modal = document.getElementById('deleteModal');
-            if (event.target === modal) hideDeleteConfirmation();
+            const modal = document.getElementById('addPaymentModal');
+            if (event.target === modal) {
+                hideAddPaymentModal();
+            }
         }
 
+        // Auto-hide alerts
         setTimeout(() => {
             document.querySelectorAll('.alert').forEach(alert => alert.style.display = 'none');
         }, 5000);
 
+        // Password confirmation validation
         const passwordForm = document.querySelector('#change-password form');
         if (passwordForm) {
             passwordForm.addEventListener('submit', function(e) {
-                const newPass = document.getElementById('newPassword').value;
-                const confirmPass = document.getElementById('confirmPassword').value;
+                const newPass = document.querySelector('input[name="newPassword"]').value;
+                const confirmPass = document.querySelector('input[name="confirmPassword"]').value;
                 if (newPass !== confirmPass) {
                     e.preventDefault();
                     alert('New passwords do not match!');
                 }
+            });
+        }
+
+        // Profile form handling
+        const profileForm = document.querySelector('#account-details form');
+        if (profileForm) {
+            profileForm.addEventListener('submit', function(e) {
+                const firstName = document.querySelector('input[name="firstName"]').value;
+                const lastName = document.querySelector('input[name="lastName"]').value;
+                
+                // Combine first and last name into fullName
+                const fullNameInput = document.createElement('input');
+                fullNameInput.type = 'hidden';
+                fullNameInput.name = 'fullName';
+                fullNameInput.value = (firstName + ' ' + lastName).trim();
+                this.appendChild(fullNameInput);
             });
         }
     </script>

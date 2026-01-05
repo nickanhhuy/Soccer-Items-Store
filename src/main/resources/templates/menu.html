@@ -18,12 +18,16 @@
                 <a th:href="@{/menu}" class="nav-link active">Shop</a>
                 <a th:href="@{/history}" class="nav-link">History</a>
                 <a th:href="@{/profile}" class="nav-link">Profile</a>
-                <a th:href="@{/admin}" class="nav-link">Admin</a>
+                <a href="#contact" class="nav-link">Contact</a>
             </nav>
             
             <div class="header-actions">
+                <a th:href="@{/cart}" class="cart-link">
+                    <span class="cart-icon">🛒</span>
+                    <span class="cart-count" id="cartCount">0</span>
+                </a>
                 <div th:if="${username == null}" class="auth-buttons">
-                    <a th:href="@{/register}" class="btn btn-outline">Login / Sign Up</a>
+                    <a th:href="@{/login}" class="btn btn-outline">Login / Sign Up</a>
                 </div>
                 <div th:if="${username != null}" class="user-menu">
                     <span class="welcome-text">Hi, <span th:text="${username}"></span></span>
@@ -171,7 +175,7 @@
         <div class="products-grid" id="productsGrid">
             <div th:each="item : ${items}" class="product-card" 
                  th:attr="data-category=${item.category}, data-name=${item.name}, data-price=${item.price}, data-stock=${item.quantity}">
-                <form action="/order" method="post" class="product-form">
+                <form action="/cart/add" method="post" class="product-form">
                     <input type="hidden" name="name" th:value="${item.name}">
                     <input type="hidden" name="category" th:value="${item.category}">
                     <input type="hidden" name="price" th:value="${item.price}">
@@ -247,30 +251,48 @@
 </section>
 
 <!-- Footer -->
-<footer class="main-footer">
+<footer class="main-footer" id="contact">
     <div class="container">
         <div class="footer-content">
             <div class="footer-section">
                 <h4>HuSoccer</h4>
-                <p>Your destination for soccer equipment and gear.</p>
+                <p>Your destination for premium soccer equipment and gear. We provide authentic products from top brands worldwide.</p>
             </div>
             <div class="footer-section">
                 <h5>Quick Links</h5>
                 <ul>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Contact</a></li>
-                    <li><a href="#">Shipping Info</a></li>
-                    <li><a href="#">Returns</a></li>
+                    <li><a href="#products">Shop</a></li>
+                    <li><a th:href="@{/history}">Order History</a></li>
+                    <li><a th:href="@{/profile}">My Profile</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h5>Contact Info</h5>
-                <p>1-800-SOCCER</p>
-                <p>info@husoccer.com</p>
+                <h5>Customer Service</h5>
+                <ul>
+                    <li><a href="#">Shipping Information</a></li>
+                    <li><a href="#">Returns & Exchanges</a></li>
+                    <li><a href="#">Size Guide</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h5>Contact Us</h5>
+                <div class="contact-info">
+                    <p><strong>Phone:</strong> 1-800-SOCCER (762-2371)</p>
+                    <p><strong>Email:</strong> support@husoccer.com</p>
+                    <p><strong>Hours:</strong> Mon-Fri: 9AM-6PM EST</p>
+                    <p><strong>Address:</strong> 123 Soccer Street, Sports City, SC 12345</p>
+                </div>
+                <div class="social-links" style="margin-top: 16px;">
+                    <a href="#" class="social-link">Facebook</a>
+                    <a href="#" class="social-link">Instagram</a>
+                    <a href="#" class="social-link">Twitter</a>
+                </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2025 HuSoccer. All rights reserved.</p>
+            <p>&copy; 2025 HuSoccer. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
         </div>
     </div>
 </footer>
@@ -429,6 +451,22 @@
             }
         });
     });
+
+    // Fetch and update cart count
+    function updateCartCount() {
+        fetch('/cart/count')
+            .then(response => response.json())
+            .then(count => {
+                const cartCountElement = document.getElementById('cartCount');
+                if (cartCountElement) {
+                    cartCountElement.textContent = count;
+                }
+            })
+            .catch(error => console.error('Error fetching cart count:', error));
+    }
+
+    // Update cart count on page load
+    window.addEventListener('DOMContentLoaded', updateCartCount);
 </script>
 </body>
 </html>

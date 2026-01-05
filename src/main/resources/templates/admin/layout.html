@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} + ' - Admin Dashboard'">Admin Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <!-- Alerts -->
+    <div th:if="${successMessage}" class="alert alert-success">
+        <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-error">
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <h1>Admin Dashboard</h1>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a th:href="@{/admin/products}" class="nav-item" th:classappend="${currentPage == 'products'} ? 'active' : ''">
+                    Product Management
+                </a>
+                <a th:href="@{/admin/inventory}" class="nav-item" th:classappend="${currentPage == 'inventory'} ? 'active' : ''">
+                    Current Inventory
+                </a>
+                <a th:href="@{/admin/orders}" class="nav-item" th:classappend="${currentPage == 'orders'} ? 'active' : ''">
+                    Customer Orders
+                </a>
+                <a th:href="@{/admin/users}" class="nav-item" th:classappend="${currentPage == 'users'} ? 'active' : ''">
+                    User Management
+                </a>
+                <a th:href="@{/admin/analytics}" class="nav-item" th:classappend="${currentPage == 'analytics'} ? 'active' : ''">
+                    Analytics
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a th:href="@{/menu}" class="back-link">← Back to Store</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div th:replace="${contentTemplate}"></div>
+        </main>
+    </div>
+
+    <script>
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            document.querySelectorAll('.alert').forEach(function(alert) {
+                alert.style.display = 'none';
+            });
+        }, 5000);
+    </script>
+</body>
+</html>
