@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Your Order - HuSoccer</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/menu.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/cart.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -25,35 +26,25 @@
     <div class="container">
         <div class="header-content">
             <div class="site-name">
-                <h1>HuSoccer</h1>
+                <h1><a th:href="@{/menu}">HuSoccer</a></h1>
             </div>
             
             <nav class="main-nav">
-                <a th:href="@{/menu}" class="nav-link">
-                    Shop
-                </a>
-                <a th:href="@{/history}" class="nav-link">
-                    History
-                </a>
-                <a th:href="@{/admin}" class="nav-link">
-                    Admin
-                </a>
+                <a th:href="@{/menu}" class="nav-link">Shop</a>
+                <a th:href="@{/history}" class="nav-link">History</a>
+                <a th:href="@{/profile}" class="nav-link">Profile</a>
+                <a href="#contact" class="nav-link">Contact</a>
             </nav>
             
             <div class="header-actions">
-                <div th:if="${username == null}" class="auth-buttons">
-                    <a th:href="@{/register}" class="btn btn-outline">
-                        Login / Sign Up
-                    </a>
-                </div>
+                <a th:href="@{/cart}" class="cart-icon">
+                    <span class="cart-text">Cart</span>
+                    <span class="cart-count" th:text="${cart != null ? cart.totalItems : 0}">0</span>
+                </a>
                 <div th:if="${username != null}" class="user-menu">
-                    <span class="welcome-text">
-                        Hi, <span th:text="${username}"></span>
-                    </span>
+                    <span class="welcome-text">Hi, <span th:text="${username}"></span></span>
                     <form th:action="@{/logout}" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-primary">
-                            Logout
-                        </button>
+                        <button type="submit" class="btn btn-primary">Logout</button>
                     </form>
                 </div>
             </div>
@@ -85,23 +76,32 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="item : ${items}">
+                            <tr th:each="item : ${cart.cartItems}">
                                 <td>
                                     <div class="product-info">
                                         <img th:src="@{'/image/' + ${item.image}}" alt="Product" class="order-image">
                                         <div>
-                                            <div th:text="${item.name}"></div>
+                                            <div th:text="${item.productName}"></div>
                                             <small th:text="${item.category}"></small>
                                         </div>
                                     </div>
                                 </td>
-                                <td th:text="${item.sizes[0]}"></td>
+                                <td th:text="${item.size}"></td>
                                 <td th:text="${item.quantity}"></td>
-                                <td>$<span th:text="${item.price}"></span></td>
-                                <td class="total-price">$<span th:text="${#numbers.formatDecimal(item.price * item.quantity, 1, 2)}"></span></td>
+                                <td>$<span th:text="${#numbers.formatDecimal(item.price, 1, 2)}"></span></td>
+                                <td class="total-price">$<span th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}"></span></td>
                             </tr>
                         </tbody>
                         <tfoot>
+                            <tr>
+                                <td colspan="4" class="text-right">Subtotal:</td>
+                                <td>$<span th:text="${#numbers.formatDecimal(cartTotal, 1, 2)}"></span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="text-right">Shipping:</td>
+                                <td th:if="${shipping == 0}">FREE</td>
+                                <td th:if="${shipping > 0}">$<span th:text="${#numbers.formatDecimal(shipping, 1, 2)}"></span></td>
+                            </tr>
                             <tr class="total-row">
                                 <td colspan="4" class="text-right"><strong>Total:</strong></td>
                                 <td class="grand-total">$<span th:text="${#numbers.formatDecimal(total, 1, 2)}"></span></td>
@@ -114,7 +114,7 @@
             <!-- Shipping and Payment Form -->
             <div class="checkout-form">
                 <h3>Shipping & Payment Information</h3>
-                <form th:action="@{/checkout}" method="post">
+                <form th:action="@{/cart/checkout}" method="post">
                     <div class="form-section">
                         <h4>Shipping Address</h4>
                         <div class="form-group">
@@ -159,11 +159,9 @@
                         </div>
                     </div>
                     
-                    <input type="hidden" name="total" th:value="${total}">
-                    
                     <div class="form-actions">
-                        <a th:href="@{/menu}" class="btn btn-outline">Continue Shopping</a>
-                        <button type="submit" class="btn btn-primary">Proceed to Checkout</button>
+                        <a th:href="@{/cart}" class="btn btn-outline">Back to Cart</a>
+                        <button type="submit" class="btn btn-primary">Place Order</button>
                     </div>
                 </form>
             </div>

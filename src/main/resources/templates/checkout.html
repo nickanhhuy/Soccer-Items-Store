@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Order Successful - HuSoccer</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/menu.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/cart.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/checkout.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -26,35 +27,25 @@
     <div class="container">
         <div class="header-content">
             <div class="site-name">
-                <h1>HuSoccer</h1>
+                <h1><a th:href="@{/menu}">HuSoccer</a></h1>
             </div>
             
             <nav class="main-nav">
-                <a th:href="@{/menu}" class="nav-link">
-                    Shop
-                </a>
-                <a th:href="@{/history}" class="nav-link">
-                    History
-                </a>
-                <a th:href="@{/admin}" class="nav-link">
-                    Admin
-                </a>
+                <a th:href="@{/menu}" class="nav-link">Shop</a>
+                <a th:href="@{/history}" class="nav-link">History</a>
+                <a th:href="@{/profile}" class="nav-link">Profile</a>
+                <a href="#contact" class="nav-link">Contact</a>
             </nav>
             
             <div class="header-actions">
-                <div th:if="${username == null}" class="auth-buttons">
-                    <a th:href="@{/register}" class="btn btn-outline">
-                        Login / Sign Up
-                    </a>
-                </div>
+                <a th:href="@{/cart}" class="cart-icon">
+                    <span class="cart-text">Cart</span>
+                    <span class="cart-count">0</span>
+                </a>
                 <div th:if="${username != null}" class="user-menu">
-                    <span class="welcome-text">
-                        Hi, <span th:text="${username}"></span>
-                    </span>
+                    <span class="welcome-text">Hi, <span th:text="${username}"></span></span>
                     <form th:action="@{/logout}" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-primary">
-                            Logout
-                        </button>
+                        <button type="submit" class="btn btn-primary">Logout</button>
                     </form>
                 </div>
             </div>

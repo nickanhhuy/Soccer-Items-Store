@@ -34,16 +34,15 @@ public class OrderService {
         
         Order savedOrder = orderRepo.save(order);
         
-        // Send order confirmation email - TEMPORARILY DISABLED FOR TESTING
-        /*
+        // Send order confirmation email
         try {
             String customerEmail = userService.getUserByUsername(order.getUsername()).getEmail();
             emailService.sendOrderConfirmation(savedOrder, customerEmail);
+            System.out.println("Order confirmation email sent to: " + customerEmail);
         } catch (Exception e) {
             System.err.println("Failed to send order confirmation email: " + e.getMessage());
             // Don't fail the order if email fails
         }
-        */
         
         return savedOrder;
     }
