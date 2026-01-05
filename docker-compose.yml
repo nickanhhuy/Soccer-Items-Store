@@ -11,6 +11,11 @@ services:
       - "3307:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
   app:
     build: .
@@ -25,12 +30,16 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@husoccer.com}
       UPLOAD_PATH: /app/uploads/avatars
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8080}
+      SERVER_PORT: ${SERVER_PORT:-8080}
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     env_file:
       - .env
     volumes:
       - avatar-uploads:/app/uploads/avatars
+    restart: unless-stopped
 
 volumes:
   mysql-data:
