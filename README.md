@@ -2,22 +2,33 @@
 
 **Live Demo:** https://husoccershop.site
 
-A full-stack e-commerce platform for soccer equipment built with Spring Boot and deployed on AWS EC2 with Docker.
-
-**Tech Stack:** Java 17 • Spring Boot • MySQL • Docker • AWS EC2 • Resend SMTP
+A full-stack e-commerce platform for soccer equipment built with Spring Boot and deployed on AWS EC2.
 
 ---
 
 ## Overview
 
-Production-ready e-commerce application featuring user authentication, shopping cart, order management, and admin dashboard. Demonstrates modern software engineering practices including containerization, cloud deployment, and secure data handling.
+Production-ready e-commerce application with user authentication, shopping cart, order management, and admin dashboard.
 
 **Key Highlights:**
-- Secure authentication with role-based access control (USER/ADMIN)
+- Secure authentication with role-based access control
 - Real-time inventory management and analytics
-- Automated email notifications with Resend
-- Docker containerization for consistent deployment
-- AWS S3 integration for data backups
+- Automated email notifications
+- Docker containerization
+- AWS cloud deployment
+
+---
+
+## Tech Stack
+
+| Category | Technologies |
+|----------|-------------|
+| **Backend** | Java 17, Spring Boot 3.x, Spring Security, Spring Data JPA |
+| **Database** | MySQL 8.0 |
+| **Frontend** | Thymeleaf, HTML5, CSS3, JavaScript |
+| **DevOps** | Docker, Docker Compose, AWS EC2, AWS S3 |
+| **Email** | Resend SMTP API |
+| **Security** | BCrypt, CSRF Protection, SSL/TLS |
 
 ---
 
@@ -25,18 +36,14 @@ Production-ready e-commerce application featuring user authentication, shopping 
 
 ![AWS Architecture](docs/HuSoccerShop_AWS.png)
 
-**Deployment:**
-- **Platform:** AWS EC2 (t2.medium, Amazon Linux 2023)
-- **Containers:** Docker Compose (Spring Boot + MySQL 8.0)
-- **Email:** Resend SMTP for transactional emails
-- **Storage:** AWS S3 for encrypted backups
+**Deployment:** AWS EC2 (t2.medium) • Docker Compose • MySQL 8.0 • Resend SMTP • AWS S3
 
 ---
 
 ## Features
 
 ### 🛒 Shopping Experience
-Browse products, add to cart with size/quantity selection, and secure checkout with multiple payment methods.
+Product catalog with search, filtering, and secure checkout with multiple payment methods.
 
 ![Application UI](docs/UI.png)
 
@@ -51,7 +58,7 @@ Complete product, user, and order management with analytics and revenue tracking
 ![Admin Panel](docs/admin.png)
 
 ### 📧 Email Notifications
-Automated email verification and order confirmations using Resend API.
+Automated email verification and order confirmations.
 
 ![Email Verification](docs/emailNotify.png)
 
@@ -59,15 +66,8 @@ Automated email verification and order confirmations using Resend API.
 
 ## Quick Start
 
-### Prerequisites
-- Java 17+
-- Docker & Docker Compose
-- Git
-
-### Local Setup
-
 ```bash
-# Clone and navigate
+# Clone repository
 git clone https://github.com/yourusername/Soccer-Items-Store.git
 cd Soccer-Items-Store
 
@@ -85,7 +85,7 @@ docker-compose up -d --build
 
 ---
 
-## Environment Variables
+## Environment Setup
 
 | Variable | Description | Example |
 |----------|-------------|---------|
@@ -97,58 +97,58 @@ docker-compose up -d --build
 | `MAIL_HOST` | SMTP host | `smtp.resend.com` |
 | `MAIL_PASSWORD` | Resend API key | `your_api_key` |
 | `MAIL_FROM` | Sender email | `noreply@yourdomain.com` |
-| `AWS_BUCKET_NAME` | S3 bucket (optional) | `husoccer-shop` |
 
-**Setup:** Copy `.env.example` to `.env` and update with your credentials. Never commit `.env` to Git.
+Copy `.env.example` to `.env` and update with your credentials.
 
 ---
 
 ## Key Features
 
-### Customer Features
+**Customer:**
 - Product catalog with search and filtering
 - Shopping cart with size/quantity selection
 - User registration with email verification
 - Order history and tracking
 - Profile management with avatar upload
 
-### Admin Features
-- Product management (CRUD operations)
+**Admin:**
+- Product management (CRUD)
 - User management with role assignment
 - Order tracking and management
 - Analytics dashboard with revenue metrics
 - Inventory control with stock alerts
 
-### Security
+**Security:**
 - BCrypt password encryption
 - Role-based access control (RBAC)
 - CSRF protection
 - SQL injection prevention (JPA)
-- XSS protection (Thymeleaf)
 - Secure session management
 
 ---
 
 ## Database Schema
 
-**User:** Authentication and profile data (userName, password, email, role, avatarUrl)  
-**Item:** Product catalog (name, category, price, quantity, sizes, image)  
-**Order:** Customer orders (fullName, address, paymentMethod, totalAmount, orderDate)  
-**OrderItem:** Order line items (productName, size, quantity, price)
+| Entity | Description |
+|--------|-------------|
+| **User** | Authentication and profile (userName, password, email, role, avatarUrl) |
+| **Item** | Product catalog (name, category, price, quantity, sizes, image) |
+| **Order** | Customer orders (fullName, address, paymentMethod, totalAmount) |
+| **OrderItem** | Order line items (productName, size, quantity, price) |
 
 ---
 
 ## API Endpoints
 
-**Public:** `/` (home), `/menu` (catalog), `/login`, `/register`  
-**Authenticated:** `/order`, `/history`, `/profile`, `/profile/upload-avatar`  
-**Admin:** `/admin`, `/admin/saveItem`, `/admin/createUser`, `/analytics`
+| Access Level | Endpoints |
+|--------------|-----------|
+| **Public** | `/` (home), `/menu` (catalog), `/login`, `/register` |
+| **Authenticated** | `/order`, `/history`, `/profile`, `/profile/upload-avatar` |
+| **Admin** | `/admin`, `/admin/saveItem`, `/admin/createUser`, `/analytics` |
 
 ---
 
-## Deployment
-
-### AWS EC2 Production
+## AWS Deployment
 
 ```bash
 # Connect to EC2
@@ -167,29 +167,7 @@ docker-compose ps
 docker-compose logs -f app
 ```
 
-**Security Group:** Allow ports 22 (SSH), 8080 (HTTP), 3307 (MySQL - optional)
-
----
-
-## Project Structure
-
-```
-Soccer-Items-Store/
-├── src/main/java/com/example/socceritemsstore/
-│   ├── controller/      # REST controllers
-│   ├── service/         # Business logic
-│   ├── repository/      # Data access
-│   ├── model/           # JPA entities
-│   ├── config/          # Spring configuration
-│   └── security/        # Security config
-├── src/main/resources/
-│   ├── templates/       # Thymeleaf views
-│   ├── static/          # CSS, JS, images
-│   └── application.properties
-├── docker-compose.yml
-├── Dockerfile
-└── pom.xml
-```
+**Security Group:** Allow ports 22 (SSH), 8080 (HTTP)
 
 ---
 
