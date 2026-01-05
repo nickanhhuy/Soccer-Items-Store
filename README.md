@@ -1,10 +1,10 @@
 # HuSoccer Shop - Soccer Equipment E-commerce Platform
 
-**Live Demo:** http://18.206.76.32:8080
+**Live Demo:** https://husoccershop.store
 
 ## Architecture
 
-![AWS Architecture](HuSoccerShop_AWS.png)
+![AWS Architecture](docs/HuSoccerShop_AWS.png)
 
 A full-stack e-commerce platform for soccer equipment built with Spring Boot and deployed on AWS EC2 with Docker containerization.
 
