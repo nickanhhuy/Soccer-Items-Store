@@ -1,6 +1,6 @@
 # HuSoccer Shop - E-commerce Platform
 
-**Live Demo:** https://husoccershop.site
+**Live Site:** https://husoccershop.site
 
 A full-stack e-commerce platform for soccer equipment built with Spring Boot and deployed on AWS EC2.
 
@@ -168,14 +168,6 @@ docker-compose logs -f app
 ```
 
 **Security Group:** Allow ports 22 (SSH), 8080 (HTTP)
-
----
-
-## Contact
-
-**Developer:** Huy Nguyen  
-**Email:** vuanhhuynguyen053004@gmail.com  
-**Live Site:** https://husoccershop.site
 
 ---
 
