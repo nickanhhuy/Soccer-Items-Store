@@ -1,6 +1,7 @@
 # HuSoccer Shop - E-commerce Platform
 
-**Live Site:** https://husoccershop.site
+**Live Site:** https://husoccershop.site  
+**Demo Video:** https://youtu.be/5ZsjuEbmKkE
 
 A full-stack e-commerce platform for soccer equipment built with Spring Boot and deployed on AWS EC2.
 
